@@ -1,0 +1,78 @@
+<!--
+  SM-66 — Blank canvas cover with Langdock logomark + decoration
+  Figma node: 750:15261
+
+  Use when: a brand bookend or near-empty cover slide. The mark sits off
+  centre with a small × glyph dead-centre and a thin decorative vector at the
+  left third. Light nav variant.
+
+  Slots:
+    deck_title    1 line @ 12.8 px — ~32 chars
+    page_number   "P. N"
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-66 — Brand bookend</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .nav-left, .nav-right {
+    position: absolute; top: 30px;
+    color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400;
+  }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider {
+    position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2;
+  }
+  .divider.top { top: 104px; }
+  .divider.bottom { top: 1040px; }
+  .x {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px; height: 28px;
+    background: #1A1C21;
+    -webkit-mask: linear-gradient(45deg, transparent 45%, #000 45%, #000 55%, transparent 55%),
+                  linear-gradient(-45deg, transparent 45%, #000 45%, #000 55%, transparent 55%);
+            mask: linear-gradient(45deg, transparent 45%, #000 45%, #000 55%, transparent 55%),
+                  linear-gradient(-45deg, transparent 45%, #000 45%, #000 55%, transparent 55%);
+  }
+  .mark {
+    position: absolute; left: calc(50% + 268px); top: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; height: 79px;
+    background-image: url('https://placehold.co/400x79/ffffff00/1A1C21?text=LANGDOCK');
+    background-size: contain; background-repeat: no-repeat;
+  }
+  .deco {
+    position: absolute; left: 29.5%; top: 50%;
+    transform: translateY(-50%);
+    width: 327px; height: 51px;
+    background-image: url('https://placehold.co/327x51/ffffff00/1A1C21?text=DECO');
+    background-size: contain; background-repeat: no-repeat;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+    <div class="deco"></div>
+    <div class="x"></div>
+    <div class="mark"></div>
+  </div>
+</body>
+</html>

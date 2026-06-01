@@ -1,0 +1,121 @@
+<!--
+  SM-01 — Closing testimonial: full-bleed image + 96 px metric stack + speaker
+  Figma node: 1084:32440
+
+  Use when: closing a deck with a customer case study. Big numbers on top,
+  speaker attribution below. The background is a portrait/photo with a dark
+  gradient overlay (62.8 % transparent → 70 % black, left-to-right) so the
+  metrics stay readable on the left.
+
+  Slots and budgets:
+    deck_title       1 line @ 12.8 px — ~32 chars
+    page_number      "P. N"
+    metrics[0..2]    1 line each @ 96 px — keep each ≤ 12 chars
+    speaker_name     1 line @ 48 px — ~28 chars
+    speaker_role     1–2 lines @ 48 px (kept tight)
+    bg_image_url     URL of the portrait / photo to use as background
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SM-01 — Closing testimonial</title>
+  <style>
+    html, body { margin: 0; background: #2a2a2a; }
+    .slide {
+      position: relative;
+      width: 1920px; height: 1080px;
+      background: #F8F8F9;
+      font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+      color: #F3F4F5;
+      overflow: hidden;
+    }
+
+    /* Background image + gradient overlay */
+    .bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(-90deg, rgba(0,0,0,0) 62.8%, rgba(0,0,0,0.7) 100%),
+        url('https://placehold.co/2650x1426/333/aaa?text=BG+IMAGE');
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Nav band (dark variant) */
+    .nav-left, .nav-right {
+      position: absolute; top: 30px;
+      color: #78787A;
+      font-size: 12.8px; line-height: 15px;
+      font-weight: 400;
+    }
+    .nav-left  { left: 40px; }
+    .nav-right { left: 195px; }
+    .nav-right p { margin: 0; }
+    .divider {
+      position: absolute; left: 40px;
+      width: 1840px; height: 1px;
+      background: #BEBEC2;
+    }
+    .divider.top    { top: 104px; }
+    .divider.bottom { top: 1040px; }
+
+    /* Big metric stack — anchored to upper-left content area */
+    .metrics {
+      position: absolute;
+      left: 40px;
+      top: 159px;
+      max-width: 1111px;
+      margin: 0;
+      font-weight: 400;
+      font-size: 96px;
+      line-height: 1.0;
+      letter-spacing: -1.92px;
+      color: #F3F4F5;
+    }
+    .metrics p { margin: 0; }
+
+    /* Speaker block — bottom-left, above the footer line */
+    .speaker {
+      position: absolute;
+      left: 40px;
+      top: 700px;
+      width: 910px;
+      height: 299px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      font-weight: 400;
+      font-size: 48px;
+      line-height: 1.1;
+      letter-spacing: -0.96px;
+      color: #F3F4F5;
+    }
+    .speaker .name { margin: 0 0 4px; }
+    .speaker .role { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="slide">
+
+    <div class="bg" data-slot="bg_image_url"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">12</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="metrics">
+      <p data-slot="metrics.0">+400% ROI</p>
+      <p data-slot="metrics.1">+45% Usage</p>
+      <p data-slot="metrics.2">+27% KPI</p>
+    </div>
+
+    <div class="speaker">
+      <p class="name" data-slot="speaker_name">Alexander Jansen</p>
+      <p class="role" data-slot="speaker_role">CEO<br>Jansen Tore GmbH &amp; Co. KG</p>
+    </div>
+
+  </div>
+</body>
+</html>

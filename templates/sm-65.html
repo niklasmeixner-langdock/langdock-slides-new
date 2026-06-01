@@ -1,0 +1,58 @@
+<!--
+  SM-65 — Minimal cover with centred Langdock mark
+  Figma node: 750:15273
+
+  Use when: clean closing slide or a "blank canvas" mid-deck. Just nav,
+  footer divider and the mark dead-centre. Lightest possible variant.
+
+  Slots:
+    deck_title    1 line @ 12.8 px — ~32 chars
+    page_number   "P. N"
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-65 — Minimal cover</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .nav-left, .nav-right {
+    position: absolute; top: 30px;
+    color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400;
+  }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider {
+    position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2;
+  }
+  .divider.top { top: 104px; }
+  .divider.bottom { top: 1040px; }
+  .mark {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; height: 79px;
+    background-image: url('https://placehold.co/400x79/ffffff00/1A1C21?text=LANGDOCK');
+    background-size: contain; background-repeat: no-repeat;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+    <div class="mark"></div>
+  </div>
+</body>
+</html>
