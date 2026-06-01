@@ -1,0 +1,13 @@
+{
+  "name": "Langdock Slides",
+  "id": "langdock-slides",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma", "slides"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "Connects to the Langdock bridge over WebSocket and fetches image URLs referenced by slide payloads."
+  }
+}

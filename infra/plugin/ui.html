@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body {
+    margin: 0;
+    padding: 12px 14px;
+    font: 11px/1.4 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--figma-color-text);
+    background: var(--figma-color-bg);
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--figma-color-icon-disabled, #9aa0a6);
+    transition: background .15s;
+  }
+  .dot.live { background: var(--figma-color-icon-success, #2ecc71); }
+  .dot.err  { background: var(--figma-color-icon-danger,  #e94560); }
+  .label { font-weight: 600; font-size: 12px; }
+  .sub { color: var(--figma-color-text-secondary); margin-top: 2px; font-size: 11px; }
+
+  .last {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--figma-color-bg-secondary);
+  }
+  .last .name {
+    font-weight: 500;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--figma-color-text);
+  }
+  .last .where {
+    color: var(--figma-color-text-tertiary);
+    margin-top: 3px;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .jump {
+    margin-top: 8px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--figma-color-text);
+    border: 1px solid var(--figma-color-border);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .jump:hover { background: var(--figma-color-bg-hover); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="row"><span id="dot" class="dot"></span><span id="label" class="label">Connecting…</span></div>
+  <div id="meta" class="sub">Langdock Slides</div>
+
+  <div id="last" class="last hidden">
+    <div class="name" id="last-name"></div>
+    <div class="where" id="last-where"></div>
+    <button class="jump" id="jump">Jump to it</button>
+  </div>
+
+<script>
+  // Local dev: ws://localhost:4000. Swap to wss://<your-railway>.up.railway.app before publishing.
+  const WS_URL = 'ws://localhost:4000';
+
+  const dot     = document.getElementById('dot');
+  const label   = document.getElementById('label');
+  const meta    = document.getElementById('meta');
+  const last    = document.getElementById('last');
+  const lastName= document.getElementById('last-name');
+  const lastWhere=document.getElementById('last-where');
+  const jumpBtn = document.getElementById('jump');
+
+  let ws = null;
+  let reconnectTimer = null;
+
+  function setStatus(state, text, sub) {
+    dot.className = 'dot' + (state === 'live' ? ' live' : state === 'err' ? ' err' : '');
+    label.textContent = text;
+    if (sub != null) meta.textContent = sub;
+  }
+
+  function showLast(node) {
+    last.classList.remove('hidden');
+    const extra = node.count && node.count > 1 ? ` · +${node.count - 1} more` : '';
+    lastName.textContent = node.name + extra;
+    lastWhere.textContent = `${node.width}×${node.height} · (${node.x}, ${node.y}) · ${node.page}`;
+  }
+
+  function send(obj) {
+    if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+  }
+
+  function connect() {
+    clearTimeout(reconnectTimer);
+    setStatus('', 'Connecting…');
+    try { ws = new WebSocket(WS_URL); }
+    catch (e) { setStatus('err', 'Bad URL', String(e.message || e)); return; }
+
+    ws.onopen = () => setStatus('live', 'Live', 'Waiting for the next call…');
+
+    ws.onmessage = (ev) => {
+      let msg;
+      try { msg = JSON.parse(ev.data); } catch { return; }
+      if (msg && msg.type === 'exec' && typeof msg.code === 'string') {
+        setStatus('live', 'Running…');
+        parent.postMessage({ pluginMessage: msg }, '*');
+      }
+    };
+
+    ws.onclose = () => {
+      setStatus('err', 'Disconnected', 'Reconnecting in 5s…');
+      reconnectTimer = setTimeout(connect, 5000);
+    };
+    ws.onerror = () => {};
+  }
+
+  jumpBtn.addEventListener('click', () => {
+    parent.postMessage({ pluginMessage: { type: 'focus' } }, '*');
+  });
+
+  window.onmessage = (event) => {
+    const m = event.data.pluginMessage;
+    if (!m) return;
+    if (m.type === 'created') {
+      showLast(m.node);
+    } else if (m.type === 'ok') {
+      setStatus('live', 'Done', 'Waiting for the next call…');
+      send({ type: 'result', requestId: m.requestId, ok: true, result: m.result });
+    } else if (m.type === 'err') {
+      setStatus('err', 'Error', m.message);
+      send({ type: 'result', requestId: m.requestId, ok: false, error: m.message, stack: m.stack });
+    }
+  };
+
+  connect();
+</script>
+</body>
+</html>
