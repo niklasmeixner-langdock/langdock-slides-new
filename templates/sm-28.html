@@ -1,0 +1,88 @@
+<!--
+  SM-28 — Headline + subhead + 4 cards in mixed pastel colors
+  Figma node: 750:18385
+
+  Variant of SM-30 where each card uses a different pastel background to
+  visually distinguish the 4 properties. Same content shape (title, body)
+  per card.
+
+  Slots:
+    deck_title, page_number
+    title, subtitle
+    cards[0..3].bg     hex of the card background — defaults below
+    cards[0..3].title  1 line @ 24 px ink
+    cards[0..3].body   3–5 lines @ 24 px book
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-28 — 4 pastel cards</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .content {
+    position: absolute; left: 40px; top: 159px;
+    width: 1840px; height: 849px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; max-width: 755px; }
+  .subtitle { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; color: #78787A; max-width: 610px; }
+
+  .cards { display: flex; gap: 16px; flex: 1; }
+  .card {
+    flex: 1; border: 1px solid #D7D7D8; border-radius: 12px;
+    padding: 32px 40px;
+    display: flex; flex-direction: column; gap: 32px;
+  }
+  .card h3 { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.0; letter-spacing: -0.48px; color: #1A1C21; }
+  .card p  { margin: 0; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: rgba(26, 28, 33, 0.55); }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="content">
+      <h1 class="title"    data-slot="title">All while keeping your data secure</h1>
+      <p  class="subtitle" data-slot="subtitle">Your work stays private — protected by enterprise-grade security and compliance.</p>
+
+      <div class="cards">
+        <div class="card" style="background:#B6CEE2;" data-slot="cards.0.bg">
+          <h3 data-slot="cards.0.title">Headline</h3>
+          <p  data-slot="cards.0.body">Your prompts and documents stay private and are never used to train AI models.</p>
+        </div>
+        <div class="card" style="background:#D8D5CB;" data-slot="cards.1.bg">
+          <h3 data-slot="cards.1.title">Headline</h3>
+          <p  data-slot="cards.1.body">You decide who accesses your data. Existing permissions stay in place.</p>
+        </div>
+        <div class="card" style="background:#EBEBEB;" data-slot="cards.2.bg">
+          <h3 data-slot="cards.2.title">Headline</h3>
+          <p  data-slot="cards.2.body">Built for EU privacy expectations: GDPR-aligned, with EU hosting options.</p>
+        </div>
+        <div class="card" style="background:#DBE8E6;" data-slot="cards.3.bg">
+          <h3 data-slot="cards.3.title">Headline</h3>
+          <p  data-slot="cards.3.body">Built for EU privacy expectations: GDPR-aligned, with EU hosting options.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
