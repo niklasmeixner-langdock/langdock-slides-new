@@ -1,0 +1,98 @@
+<!--
+  SM-52 — Prompt-element teaching (compact title + bottom info footnote)
+  Figma node: 750:16134
+
+  Variant of SM-51: title is repositioned upper-left as a tighter block,
+  and the "Additional information" 2-line footnote appears at the bottom-
+  left. Same prompt card + annotations on the right.
+
+  Slots: same as SM-51, plus info_label + info_body.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-52 — Prompt elements (with footnote)</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F8F8F9; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .right-block { position: absolute; right: 0; top: 0; width: 1920px; height: 1080px; background: #F1F0ED; clip-path: inset(0 0 0 50%); }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .title {
+    position: absolute; left: calc(20.83% - 360px); top: calc(50% - 380px);
+    width: 755px;
+    margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21;
+  }
+  .title p { margin: 0; }
+
+  .annotations { position: absolute; left: calc(50% + 67px); top: 247px; width: 181px; }
+  .annotation { display: flex; align-items: center; justify-content: space-between; height: 64px; margin-bottom: 46px; }
+  .annotation:last-child { margin-bottom: 0; }
+  .annotation .name { color: rgba(45,45,46,0.6); font-size: 24px; line-height: 1.35; letter-spacing: -0.36px; }
+  .annotation .num  { color: #4469FC; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; }
+
+  .prompt-card {
+    position: absolute;
+    left: calc(58.33% + 107px); top: 50%;
+    transform: translateY(calc(-50% + 13px));
+    width: 600px;
+    background: #fff; border: 1px solid #D7D7D8;
+    border-radius: 32px 32px 4px 32px;
+    padding: 32px;
+    font-size: 24px; line-height: 1.35; letter-spacing: -0.36px; color: #1A1C21;
+  }
+  .prompt-card p { margin: 0 0 44px; }
+  .prompt-card p:last-child { margin-bottom: 0; }
+
+  .info {
+    position: absolute; left: 40px; top: 889px;
+    width: 601px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .info-label { margin: 0; font-weight: 400; font-size: 24px; line-height: 1; color: #1A1C21; }
+  .info-body  { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.15; color: #78787A; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="title">
+      <p data-slot="title_line1">Use Prompt Elements to</p>
+      <p data-slot="title_line2">give relevant context</p>
+    </div>
+
+    <div class="annotations">
+      <div class="annotation"><span class="name" data-slot="labels.0">Persona</span><span class="num">❶</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.1">Task</span><span class="num">❷</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.2">Context</span><span class="num">❸</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.3">Format</span><span class="num">❹</span></div>
+    </div>
+
+    <div class="prompt-card" data-slot="prompt_paragraphs">
+      <p>You are a customer support assistant responsible for writing messages to our customers.</p>
+      <p>Write an email draft that I can send out to the customer answering their questions.</p>
+      <p>This is one of our key customers. The customer gave us detailed feedback what they would like to see in the product.</p>
+      <p>Write in a friendly, informal manner. Maximum 5 sentences.</p>
+    </div>
+
+    <div class="info">
+      <p class="info-label" data-slot="info_label">Additional information</p>
+      <p class="info-body"  data-slot="info_body">Treat the language model like a newly joined colleague: they understand the general topic you are working in, but not the specific project.</p>
+    </div>
+  </div>
+</body>
+</html>
