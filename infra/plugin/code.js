@@ -108,6 +108,9 @@ function finishCreated(beforeIds, existingBoxes) {
 
 // ─── Tree → Figma nodes ───
 async function createFromTree(t, fontMap) {
+  if (t.type === 'chart') {
+    return await buildChart(t, fontMap);
+  }
   if (t.type === 'text') {
     const fn = fontMap.get(`${t.fontFamily}|${t.fontWeight}|${!!t.italic}`)
             || (await resolveFont(t.fontFamily, t.fontWeight, t.italic));
@@ -312,6 +315,12 @@ function collectFonts(tree, out) {
   if (tree.type === 'text') {
     out.push({ family: tree.fontFamily, weight: tree.fontWeight || 400, italic: !!tree.italic });
   }
+  if (tree.type === 'chart') {
+    // Chart primitives use the brand font in regular + semibold.  They
+    // share the same Inter fallback as text nodes via resolveFont().
+    out.push({ family: 'STK Bureau Sans', weight: 400, italic: false });
+    out.push({ family: 'STK Bureau Sans', weight: 600, italic: false });
+  }
   for (const child of (tree.children || [])) collectFonts(child, out);
   return out;
 }
@@ -327,6 +336,206 @@ function unionBoxes(boxes) {
   const maxX = Math.max(...boxes.map((b) => b.x + b.w));
   const maxY = Math.max(...boxes.map((b) => b.y + b.h));
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+}
+
+// ─── Chart primitives ────────────────────────────────────────────────────────
+//
+// Data-driven visuals.  Templates mark a region with
+//   <div data-chart="<kind>" data-chart-spec='{...json...}'>
+// or supply the spec via a `data-slot` (the slot text content is parsed as
+// JSON).  The walker turns the marker into a tree node
+//   { type: 'chart', kind, spec, x, y, w, h }
+// and createFromTree() dispatches here.  Each kind is a function that
+// returns a Figma frame; everything inside the frame stays native and
+// editable (rectangles, text — no flattened SVG).
+
+const CHART_COLORS = {
+  // Brand
+  accent:  { r: 0.267, g: 0.412, b: 0.988 }, // #4469FC Langdock Blue
+  ink:     { r: 0.102, g: 0.110, b: 0.129 }, // #1A1C21
+  muted:   { r: 0.471, g: 0.471, b: 0.482 }, // #78787A
+  neutral: { r: 0.745, g: 0.745, b: 0.761 }, // #BEBEC2
+  subtle:  { r: 0.957, g: 0.957, b: 0.961 }, // #F4F4F5 cards / track
+  surface: { r: 0.973, g: 0.973, b: 0.976 }, // #F8F8F9 light bg
+  white:   { r: 1,     g: 1,     b: 1     },
+  // Pastels (per styleguide accent rotation)
+  pastelBlue:   { r: 0.835, g: 0.871, b: 0.992 },
+  pastelGreen:  { r: 0.831, g: 0.937, b: 0.871 },
+  pastelPink:   { r: 0.988, g: 0.831, b: 0.890 },
+  pastelYellow: { r: 0.992, g: 0.957, b: 0.792 }
+};
+
+function chartColor(key) {
+  if (!key) return CHART_COLORS.neutral;
+  if (typeof key === 'object') return key; // already an RGB triple
+  return CHART_COLORS[key] || CHART_COLORS.neutral;
+}
+
+function chartFont(fontMap, weight) {
+  // Prefer the brand font; resolveFont's fallback chain (Inter weights)
+  // already populated fontMap entries before createFromTree was called.
+  return fontMap.get(`STK Bureau Sans|${weight}|false`)
+      || { family: 'Inter', style: weight >= 600 ? 'Semi Bold' : 'Regular' };
+}
+
+function chartText(content, font, size, color) {
+  const t = figma.createText();
+  t.fontName = font;
+  t.fontSize = size;
+  t.characters = String(content);
+  t.fills = [{ type: 'SOLID', color }];
+  return t;
+}
+
+const CHART_DISPATCH = {
+  bars: buildBarsChart
+};
+
+async function buildChart(t, fontMap) {
+  const fn = CHART_DISPATCH[t.kind];
+  if (!fn) {
+    // Unknown kind — emit a labelled placeholder so the agent gets a
+    // visible error in Figma rather than silent failure.
+    const placeholder = figma.createFrame();
+    placeholder.name = `chart-unknown-${t.kind || 'kind'}`;
+    placeholder.resize(Math.max(1, t.w), Math.max(1, t.h));
+    placeholder.fills = [{ type: 'SOLID', color: { r: 0.97, g: 0.85, b: 0.85 } }];
+    placeholder.cornerRadius = 8;
+    const msg = chartText(
+      `Unknown chart kind: ${t.kind || '(missing)'}`,
+      chartFont(fontMap, 400),
+      18,
+      chartColor('ink')
+    );
+    placeholder.appendChild(msg);
+    msg.x = 16; msg.y = 16;
+    return placeholder;
+  }
+  return await fn(t, fontMap);
+}
+
+async function buildBarsChart(t, fontMap) {
+  const spec = t.spec || {};
+  const orientation = spec.orientation || 'vertical';
+  const bars = Array.isArray(spec.bars) ? spec.bars : [];
+  const W = Math.max(1, t.w);
+  const H = Math.max(1, t.h);
+  const semiBold = chartFont(fontMap, 600);
+  const regular  = chartFont(fontMap, 400);
+
+  const valueSize = spec.valueSize || 32;
+  const labelSize = spec.labelSize || 18;
+  const gap       = spec.gap       || 24;
+  const barRadius = spec.barRadius != null ? spec.barRadius : 8;
+  const maxVal    = spec.maxValue || Math.max(1, ...bars.map((b) => Number(b.value) || 0));
+
+  const root = figma.createFrame();
+  root.name = 'chart-bars';
+  root.fills = [];
+  root.resize(W, H);
+
+  if (orientation !== 'horizontal') {
+    // Vertical bars — row of columns, columns bottom-aligned.
+    root.layoutMode = 'HORIZONTAL';
+    root.itemSpacing = gap;
+    root.primaryAxisAlignItems = 'CENTER';
+    root.counterAxisAlignItems = 'MAX';
+    root.primaryAxisSizingMode = 'FIXED';
+    root.counterAxisSizingMode = 'FIXED';
+
+    const n = bars.length || 1;
+    const colW = Math.max(40, (W - (n - 1) * gap) / n);
+    const barWidth = Math.min(spec.barWidth || colW * 0.6, colW);
+    const reservedTop    = valueSize * 1.3 + 16;
+    const reservedBottom = labelSize * 1.3 + 16;
+    const maxBarH = Math.max(2, H - reservedTop - reservedBottom);
+
+    for (const bar of bars) {
+      const col = figma.createFrame();
+      col.name = bar.label || 'bar';
+      col.fills = [];
+      col.layoutMode = 'VERTICAL';
+      col.itemSpacing = 16;
+      col.primaryAxisAlignItems = 'MAX';      // bottom-align children
+      col.counterAxisAlignItems = 'CENTER';
+      col.resize(colW, H);
+      col.primaryAxisSizingMode = 'FIXED';
+      col.counterAxisSizingMode = 'FIXED';
+
+      const valueLabel = bar.valueLabel != null ? bar.valueLabel : String(bar.value || 0);
+      const valueText = chartText(valueLabel, semiBold, valueSize, chartColor(bar.valueColor || 'ink'));
+      valueText.textAlignHorizontal = 'CENTER';
+      col.appendChild(valueText);
+
+      const ratio = Math.max(0, Math.min(1, (Number(bar.value) || 0) / maxVal));
+      const barH = Math.max(2, Math.round(maxBarH * ratio));
+      const barRect = figma.createRectangle();
+      barRect.resize(barWidth, barH);
+      barRect.fills = [{ type: 'SOLID', color: chartColor(bar.color || 'neutral') }];
+      barRect.cornerRadius = barRadius;
+      col.appendChild(barRect);
+
+      if (bar.label) {
+        const labelText = chartText(bar.label, regular, labelSize, chartColor(bar.labelColor || 'muted'));
+        labelText.textAlignHorizontal = 'CENTER';
+        col.appendChild(labelText);
+      }
+
+      root.appendChild(col);
+    }
+    return root;
+  }
+
+  // Horizontal bars — column of rows, bars grow left-to-right.
+  root.layoutMode = 'VERTICAL';
+  root.itemSpacing = gap;
+  root.primaryAxisAlignItems = 'CENTER';
+  root.counterAxisAlignItems = 'MIN';
+  root.primaryAxisSizingMode = 'FIXED';
+  root.counterAxisSizingMode = 'FIXED';
+
+  const n = bars.length || 1;
+  const rowH = Math.max(20, (H - (n - 1) * gap) / n);
+  const barHeight = Math.min(spec.barWidth || rowH * 0.55, rowH);
+  // Reserve space for the value text to the right of the bar.
+  const valueGutter = spec.valueGutter || 120;
+  const labelGutter = spec.labelGutter || 220;
+  const trackW = Math.max(40, W - labelGutter - valueGutter - 32);
+
+  for (const bar of bars) {
+    const row = figma.createFrame();
+    row.name = bar.label || 'bar';
+    row.fills = [];
+    row.layoutMode = 'HORIZONTAL';
+    row.itemSpacing = 16;
+    row.primaryAxisAlignItems = 'MIN';
+    row.counterAxisAlignItems = 'CENTER';
+    row.resize(W, rowH);
+    row.primaryAxisSizingMode = 'FIXED';
+    row.counterAxisSizingMode = 'FIXED';
+
+    if (bar.label) {
+      const labelText = chartText(bar.label, regular, labelSize, chartColor(bar.labelColor || 'ink'));
+      labelText.textAutoResize = 'HEIGHT';
+      labelText.resize(labelGutter, labelText.height);
+      row.appendChild(labelText);
+    }
+
+    const ratio = Math.max(0, Math.min(1, (Number(bar.value) || 0) / maxVal));
+    const barW = Math.max(2, Math.round(trackW * ratio));
+    const barRect = figma.createRectangle();
+    barRect.resize(barW, barHeight);
+    barRect.fills = [{ type: 'SOLID', color: chartColor(bar.color || 'neutral') }];
+    barRect.cornerRadius = barRadius;
+    row.appendChild(barRect);
+
+    const valueLabel = bar.valueLabel != null ? bar.valueLabel : String(bar.value || 0);
+    const valueText = chartText(valueLabel, semiBold, labelSize, chartColor(bar.valueColor || 'ink'));
+    row.appendChild(valueText);
+
+    root.appendChild(row);
+  }
+  return root;
 }
 
 function safe(value, depth) {

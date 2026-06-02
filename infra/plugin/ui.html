@@ -243,6 +243,24 @@
     const h = Math.round(rect.height);
     if (w <= 0 || h <= 0) return null;
 
+    // ── Chart marker.  Templates mark a region with `data-chart="kind"`.
+    // The spec is JSON resolved in this order:
+    //   1. textContent (set by `data-slot` substitution — agent override)
+    //   2. `data-chart-spec` attribute (the template's default)
+    // Charts are leaves — their children are not walked.
+    const chartKind = el.getAttribute && el.getAttribute('data-chart');
+    if (chartKind) {
+      let spec = {};
+      const fromText = (el.textContent || '').trim();
+      const fromAttr = (el.getAttribute('data-chart-spec') || '').trim();
+      const raw = fromText || fromAttr;
+      if (raw) {
+        try { spec = JSON.parse(raw); }
+        catch (e) { spec = { _parseError: String(e.message), raw: raw.slice(0, 200) }; }
+      }
+      return { type: 'chart', kind: chartKind, spec, x, y, w, h };
+    }
+
     const fill        = parseColor(style.backgroundColor);
     const bgImage     = parseBackgroundImage(style.backgroundImage);
     const borderWidth = parseFloat(style.borderTopWidth) || 0;

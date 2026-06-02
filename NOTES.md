@@ -138,16 +138,39 @@ Pass 2 (this commit):
       auto-layout so it's not affected, but child auto-layout
       frames at 0 height might appear if their children all hug
       to 0
-4.  Continue verifying the remaining simple archetypes:
+4.  Re-render `templates/bar-chart.html` to verify the new chart-
+    primitive dispatch (see Charts section below).
+5.  Continue verifying the remaining simple archetypes:
     `text-image-right`, `image-cover-headline`, `quote`,
     `workshop-cover`, `cover-image`, `cover-frosted`,
     `stats-logos`, `numbered-steps`, `centered-definition`,
     `section-divider-portrait`, `section-divider-image`,
     `closing-testimonial`.
-5.  Hand-code the visual-heavy archetypes (one Figma Plugin API
-    JS file per archetype): `roi-chart`, `hub-diagram`,
-    `growth-charts`, `comparison-bars`, `prompt-elements`,
-    `product-ui`.
-6.  Add SVG support to the renderer
+6.  Add the remaining chart primitives — `comparisonBars`,
+    `growthChart`, `hubDiagram` — each as a new entry in
+    `CHART_DISPATCH` in `code.js`.  Migrate the corresponding
+    visual-heavy archetype templates (`comparison-bars.html`,
+    `growth-charts.html`, `hub-diagram.html`, `roi-chart.html`)
+    to the chart-marker form.
+7.  Add SVG support to the renderer
     (`figma.createNodeFromSvg` for inline `<svg>` elements).
-7.  Asset library wiring (user is providing files).
+8.  Asset library wiring (user is providing files).
+
+## Charts (chart-primitive system)
+
+Visual-heavy slides are not rendered by the HTML walker — they're
+**data-driven**.  Templates mark a region with
+`<div data-chart="<kind>" data-chart-spec='<json>'>`, the walker
+turns it into a `{ type: 'chart', kind, spec, x, y, w, h }` tree
+node, and `createFromTree` dispatches to a builder in
+`CHART_DISPATCH` (in `infra/plugin/code.js`).  Builders return
+native Figma frames; nothing is flattened to images or SVG, so
+the output stays fully editable.
+
+When `data-slot="chart_spec"` is present on the marker, the
+agent's slot value overrides the template's default — the walker
+prefers `textContent` over the `data-chart-spec` attribute.
+
+See `templates/README.md` § *Chart primitives* for the schema and
+the list of available kinds.  Currently only `bars` is wired up;
+demo template is `templates/bar-chart.html`.

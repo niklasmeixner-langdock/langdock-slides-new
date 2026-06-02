@@ -45,6 +45,7 @@ Slide  =  Archetype  +  Theme  +  Treatment (when applicable)  +  Slot values
 | `comparison-bars.html`          | Two bars (potential vs actual usage etc.).                                    | SM-24 |
 | `product-ui.html`               | Tab row + large product UI mockup.                                            | SM-31, 61, 62, 63, 64 |
 | `prompt-elements.html`          | Annotated prompt-card teaching slide.                                         | SM-51, 52 |
+| `bar-chart.html`                | Headline + data-driven bar chart (uses the chart-primitive system).           | new |
 
 \* Pure colour variants — replaced by `centered-statement.html` + a `Theme`
 from the styleguide.
@@ -69,8 +70,55 @@ When the LLM authors a new slide:
 
 The plugin's HTML→Figma renderer turns it into native editable Figma nodes.
 
+## Chart primitives
+
+For visuals that aren't well-represented by HTML+CSS (bars, growth curves,
+hub diagrams, comparison charts), the renderer supports **chart primitives**
+— data-driven Figma builders dispatched from a marker element in the
+template:
+
+```html
+<div class="chart" data-chart="bars" data-chart-spec='{
+  "orientation": "vertical",
+  "bars": [
+    { "label": "April 2024", "value":  9000, "valueLabel": "9.000", "color": "neutral" },
+    { "label": "Heute",       "value": 33000, "valueLabel": "33.000", "color": "accent" }
+  ]
+}'></div>
+```
+
+The walker treats the element as a leaf and forwards `{ kind, spec, x, y, w, h }`
+to the matching primitive in `infra/plugin/code.js`.  Output is native Figma
+nodes (rectangles, text) — everything stays editable in Figma.
+
+To make a chart's data slot-replaceable, add `data-slot="chart_spec"` to
+the marker and have the agent pass the JSON as the slot value:
+
+```html
+<div class="chart" data-chart="bars" data-slot="chart_spec"
+     data-chart-spec='<fallback spec used if slot is not provided>'></div>
+```
+
+When both are present, `textContent` (the slot-substituted value) wins.
+
+### Available kinds
+
+| Kind   | Use when                                                       | Spec |
+| ------ | -------------------------------------------------------------- | ---- |
+| `bars` | Vertical or horizontal bar chart (growth, comparison, ranking) | See `templates/bar-chart.html` header comment for the full schema. |
+
+More kinds (`comparisonBars`, `growthChart`, `hubDiagram`) will be added
+incrementally — each lives in `code.js` next to `buildBarsChart` and is
+registered in the `CHART_DISPATCH` table.
+
+### Color keys
+
+Charts accept either a key from the Langdock palette or a literal RGB
+object.  Keys: `accent`, `ink`, `muted`, `neutral`, `subtle`, `surface`,
+`white`, `pastelBlue`, `pastelGreen`, `pastelPink`, `pastelYellow`.
+
 ## Files
 
 - `legacy/` — the original 66 SM-XX HTML files, preserved for reference.
 - `README.md` — this file.
-- `*.html` — the 23 archetypes.
+- `*.html` — the 24 archetypes.
