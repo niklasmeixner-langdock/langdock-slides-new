@@ -122,17 +122,21 @@ async function createFromTree(t, fontMap) {
     if (t.textAlign === 'center') text.textAlignHorizontal = 'CENTER';
     else if (t.textAlign === 'right') text.textAlignHorizontal = 'RIGHT';
 
-    if (t.constrained && t.w > 0) {
-      // Fixed width, auto height.  Order: switch to HEIGHT mode first (so
-      // Figma knows width is the constrained axis), resize to target width,
-      // then set characters — auto-resize fills in the height.
-      text.textAutoResize = 'HEIGHT';
-      text.resize(t.w, 1);
-    } else {
-      text.textAutoResize = 'WIDTH_AND_HEIGHT';
-    }
-
+    // Set characters with default WIDTH_AND_HEIGHT mode so Figma measures
+    // the natural width using the final font config.
     text.characters = String(t.characters || '');
+
+    if (t.constrained && t.w > 0) {
+      // Fixed width, auto height.  Switch to HEIGHT mode AFTER characters
+      // are in place — calling resize() on an empty text node with h=1
+      // makes Figma silently demote textAutoResize back to NONE.  Now that
+      // characters are set, the natural height is known and Figma can
+      // re-flow into the target width.
+      text.textAutoResize = 'HEIGHT';
+      text.resize(t.w, text.height);
+    }
+    // else: leave default WIDTH_AND_HEIGHT — natural width and height.
+
     text.fills = [{
       type: 'SOLID',
       color: { r: t.color.r, g: t.color.g, b: t.color.b },
@@ -204,8 +208,14 @@ async function createFromTree(t, fontMap) {
     else if (t.layout.justify === 'flex-end') f.primaryAxisAlignItems = 'MAX';
     if (t.layout.align === 'center')          f.counterAxisAlignItems = 'CENTER';
     else if (t.layout.align === 'flex-end')   f.counterAxisAlignItems = 'MAX';
-    // Frame sizes itself to its w/h (fixed), not hugged.
-    f.primaryAxisSizingMode = 'FIXED';
+    // Primary axis hugs content (the whole point of auto-layout — height
+    // grows with content for VERTICAL, width grows for HORIZONTAL).  This
+    // prevents the iframe-measured size from clipping when Figma's real
+    // font renders taller/wider than the walker's fallback.  Counter axis
+    // stays fixed at the iframe-measured cross dimension.  When this
+    // frame is itself a child of an auto-layout parent, the parent's
+    // layoutSizing setter overrides these.
+    f.primaryAxisSizingMode = 'AUTO';
     f.counterAxisSizingMode = 'FIXED';
   }
 

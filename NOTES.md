@@ -1,7 +1,8 @@
 # Langdock Slides — Status & Pickup Notes
 
-Pausing here on 2026-06-02.  This file captures where the renderer stands,
-the bugs that are still open, and the order to attack them when work resumes.
+Updated 2026-06-02 (second pass).  This file captures where the
+renderer stands, the bugs that are still open, and the order to
+attack them when work resumes.
 
 ## What this repo does
 
@@ -40,83 +41,113 @@ See `CLAUDE.md` for the agent-facing summary.
 
 ## Open bugs (in priority order)
 
-### 1.  Text width is sometimes too narrow → wraps unexpectedly
+All three Pass 1 bugs have a fix in this commit.  None has been
+tested in Figma yet — local bridge is intentionally not running.
+First action on resume is to start the bridge and re-fire
+`stacked-cards` to verify.
 
-Symptoms in latest `stacked-cards` render:
+### ~~1.  Text width too narrow → wraps unexpectedly~~  [fix in this commit]
 
-- `Advanced Tools` (nav-right) wraps to two lines
-- Card title `Subagents & Workflows` wraps to two lines (w=237, two
-  24px lines of height 48)
+Root cause: `getComputedStyle().width` always returns a resolved
+px value, even for elements with no declared CSS width — so the
+walker's `explicitW` check was a false positive for spans in flex
+containers.
 
-The walker measures text width in the iframe (system font), then the
-renderer feeds that width into Figma where the actual font (Inter Semi
-Bold) is wider.  We reordered text-property setting so `fontSize` is set
-BEFORE `characters` (otherwise Figma measures at default fontSize 12 and
-doesn't re-measure).  That fixed `Langdock` (one word) but multi-word
-text still wraps.
+Fix in `infra/plugin/ui.html`: replace the `explicitW` heuristic
+with an intent-based check.  An element is `constrained` only
+when:
 
-Probable cause: the walker's `constrained` flag is set to TRUE for any
-text inside a flex container even when the CSS doesn't intend a width
-constraint (no `max-width`, no explicit `width`).  We started fixing
-this with the `isAbsolute` exemption — extend the same logic to:
+- `max-width` is set (real CSS constraint), OR
+- it's a leaf that stretches to its parent's cross-axis width:
+  block in normal flow, OR block in a flex-column parent (default
+  align-items=stretch).
 
-- inline / inline-flex / flex-item children of a flex container with
-  no max-width should not be treated as constrained
+Anything else — flex-row items, inline elements, position:absolute
+elements — sizes naturally in Figma.
 
-### 2.  Body text in a non-flex parent reports `h=1, mode=NONE`
+### ~~2.  Body text reports `h=1, mode=NONE`~~  [fix in this commit]
 
-The renderer sets `text.textAutoResize = 'HEIGHT'` and `resize(w, 1)` for
-constrained text, but the inspector reports `textAutoResize: 'NONE'` and
-`height: 1` afterward.  Visually the text DOES render (height auto-grows
-past the bounding box), but the node geometry is wrong, which will
-break any downstream layout that reads `text.height`.
+Root cause: calling `text.resize(w, 1)` on an empty text node with
+`textAutoResize='HEIGHT'` already set silently demoted the mode
+back to `NONE`.
 
-Try: set `textAutoResize='HEIGHT'` AFTER `characters` is set, not before
-the `resize` call.  Or: set it, set characters, then resize.  The order
-problem keeps surfacing — needs a definitive test against the Figma
-plugin API behavior.
+Fix in `infra/plugin/code.js`: set `characters` FIRST (under the
+default `WIDTH_AND_HEIGHT` mode, so Figma measures the natural
+width with the final font config), THEN switch to `HEIGHT` mode
+and resize to the target width.  The current `text.height` value
+is passed to `resize()` so Figma has something coherent to start
+from before re-flowing.
 
-### 3.  Cards' fixed height clips wrapped title text
+### ~~3.  Cards' fixed height clips wrapped title text~~  [fix in this commit]
 
-Once #1 is fixed, the cards' frame height (currently locked from the
-walker's iframe measurement) may still be too small if the renderer's
-real-font measurements push title onto two lines.  The card frame is
-NOT auto-layout (CSS uses `position: relative` only), so it doesn't
-auto-grow.  Solutions:
+Two-part fix:
 
-- (a) Make `.card` auto-layout VERTICAL in CSS, OR
-- (b) Have the renderer detect "container of mostly-text content" and
-  enable HUG sizing
+- `templates/stacked-cards.html`: `.card` now uses
+  `display: flex; flex-direction: column; gap: 8px` instead of
+  `position: relative`.  The walker emits an auto-layout VERTICAL
+  frame; head + body + (absolute) pill all become flex children.
+- `infra/plugin/code.js`: auto-layout frames now use
+  `primaryAxisSizingMode='AUTO'` (was `'FIXED'`).  Primary axis
+  hugs content — height grows for VERTICAL layouts, width grows
+  for HORIZONTAL.  Counter axis remains FIXED to the
+  iframe-measured cross dimension.  When the frame is itself a
+  layout child, the parent's `layoutSizingHorizontal/Vertical`
+  setter overrides.
 
-Option (a) is simpler — change the template.
+This means the .cards container and each .card will auto-grow
+their height to fit Figma's font, instead of clipping at the
+walker's measured value.
 
-## Files modified this session (uncommitted)
+## Files modified this session
 
-- `infra/plugin/code.js` — text-property order fix, HEIGHT-mode handling,
-  slide-relative x/y preservation for flex children's grandchildren,
-  layoutSizing HUG/FIXED logic for text children of auto-layout, image
-  fill fallback, `_renderDebug` instrumentation
-- `infra/plugin/ui.html` — walker preserves slide-relative x/y on flex
-  children, splits styled-with-text containers, `isAbsolute` exemption
-  for the `constrained` flag
-- `knowledge/README.md`, `knowledge/langdock-docs-index.md` — new
+Committed at end of Pass 1: bridge / template scaffolding,
+flex-children x/y preservation, mixed styled-and-text containers,
+image-fill fallback, knowledge index, `_renderDebug` instrumentation.
+
+Pass 2 (this commit):
+
+- `infra/plugin/ui.html` — `constrained` flag rewritten around
+  intent (max-width / block-in-normal-flow / block-in-flex-column)
+  rather than the unreliable `getComputedStyle().width` value
+- `infra/plugin/code.js` — text properties set before characters;
+  `characters` set under default WIDTH_AND_HEIGHT mode; HEIGHT
+  mode switched on AFTER characters and resize uses `text.height`;
+  auto-layout frames use `primaryAxisSizingMode='AUTO'` so height
+  (or width) hugs content
+- `templates/stacked-cards.html` — `.card` switched from
+  `position: relative` to `display: flex; flex-direction: column;
+  gap: 8px` so card height auto-grows with Figma-font content
 
 ## When resuming
 
-1.  Land bug #1 (the `constrained` flag is over-eager).  Re-fire
-    `stacked-cards` and verify title fits on one line.
-2.  Land bug #2 (body text HEIGHT mode not sticking).
-3.  Either change `.card` CSS to flex-column (bug #3 fix) or add
-    container-auto-grow heuristic.
+1.  Start the local bridge: `cd infra/server && PORT=4000 node
+    server.js` (background it).  Open the plugin in Figma.
+2.  Re-render `stacked-cards` and inspect with
+    `figma.getNodeByIdAsync` to verify:
+    - `Langdock` and `Advanced Tools` no longer wrap
+    - Card title `Subagents & Workflows` is on a single line
+    - Body text has `textAutoResize='HEIGHT'` and a real
+      `height` value (not 1)
+    - Card and `.cards` container heights auto-grow past the
+      iframe measurement
+3.  If anything regresses, the most likely culprits are:
+    - `parentIsFlexRow` over-detecting (e.g. inline-flex parents
+      that aren't real row containers)
+    - `primaryAxisSizingMode='AUTO'` collapsing some container
+      whose t.h was load-bearing — the slide root is NOT
+      auto-layout so it's not affected, but child auto-layout
+      frames at 0 height might appear if their children all hug
+      to 0
 4.  Continue verifying the remaining simple archetypes:
     `text-image-right`, `image-cover-headline`, `quote`,
-    `workshop-cover`, `cover-image`, `cover-frosted`, `stats-logos`,
-    `numbered-steps`, `centered-definition`,
+    `workshop-cover`, `cover-image`, `cover-frosted`,
+    `stats-logos`, `numbered-steps`, `centered-definition`,
     `section-divider-portrait`, `section-divider-image`,
     `closing-testimonial`.
-5.  Hand-code the visual-heavy archetypes (one Figma Plugin API JS file
-    per archetype): `roi-chart`, `hub-diagram`, `growth-charts`,
-    `comparison-bars`, `prompt-elements`, `product-ui`.
+5.  Hand-code the visual-heavy archetypes (one Figma Plugin API
+    JS file per archetype): `roi-chart`, `hub-diagram`,
+    `growth-charts`, `comparison-bars`, `prompt-elements`,
+    `product-ui`.
 6.  Add SVG support to the renderer
     (`figma.createNodeFromSvg` for inline `<svg>` elements).
 7.  Asset library wiring (user is providing files).

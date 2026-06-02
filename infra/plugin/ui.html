@@ -253,15 +253,40 @@
     const hasStyling   = !!fill || !!bgImage || borderWidth > 0;
 
     // Width constrained? If yes, Figma must wrap to that width.
-    // - max-width / width on a block element is a real constraint.
-    // - position:absolute elements get "shrink-to-fit" width from the
-    //   browser even without an explicit width — that's NOT a constraint
-    //   we want to enforce in Figma (Inter renders wider than the iframe's
-    //   fallback font, so forcing the iframe width would clip / wrap).
-    const isAbsolute   = style.position === 'absolute' || style.position === 'fixed';
-    const hasMaxWidth  = style.maxWidth && style.maxWidth !== 'none';
-    const explicitW    = style.width && style.width !== 'auto' && !style.width.startsWith('-');
-    const constrained  = hasMaxWidth || (explicitW && el.children.length === 0 && !isAbsolute);
+    //
+    // getComputedStyle().width returns the *resolved* width in px for any
+    // laid-out element — even a `<span>` with no declared width — so we
+    // can't trust the px value as a signal of intent.  A real width
+    // constraint exists when:
+    //   - max-width is set, OR
+    //   - the element stretches to its parent's cross-axis width:
+    //       • a block in normal flow (e.g. a `<p>` inside a `<div>`)
+    //       • a block flex item in a flex-COLUMN parent (default
+    //         align-items=stretch fills the row)
+    //
+    // Anything else should size naturally in Figma:
+    //   - position:absolute elements (browser shrink-to-fit)
+    //   - inline / inline-block (sizes to content)
+    //   - flex-ROW items (size to content along the main axis)
+    //
+    // Inter renders wider than the iframe's fallback font, so falsely
+    // locking an iframe-measured width forces unwanted line breaks.
+    const parentEl       = el.parentElement;
+    const parentStyle    = parentEl ? win.getComputedStyle(parentEl) : null;
+    const parentDisplay  = parentStyle ? parentStyle.display : '';
+    const parentFlexDir  = parentStyle ? parentStyle.flexDirection : '';
+    const parentIsFlex   = parentDisplay === 'flex' || parentDisplay === 'inline-flex';
+    const parentIsFlexCol = parentIsFlex && (parentFlexDir === 'column' || parentFlexDir === 'column-reverse');
+    const parentIsFlexRow = parentIsFlex && !parentIsFlexCol;
+    const isAbsolute     = style.position === 'absolute' || style.position === 'fixed';
+    const isInline       = style.display === 'inline' || style.display === 'inline-block';
+    const hasMaxWidth    = style.maxWidth && style.maxWidth !== 'none';
+    const constrained    = hasMaxWidth || (
+      el.children.length === 0 &&
+      !isAbsolute &&
+      !isInline &&
+      !parentIsFlexRow
+    );
 
     // Flex container?
     const layout = (style.display === 'flex') ? {
