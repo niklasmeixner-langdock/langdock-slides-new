@@ -1,0 +1,112 @@
+<!--
+  SM-24 — Adoption-gap bars: 100 % potential vs <30 % usage, centred pill
+  Figma node: 750:18724
+
+  Use when: contrasting AI potential against actual usage. Left blue bar
+  (filled to 100 %) and right grey bar (filled <30 %) flank a centred
+  Langdock pill; curves connect the two sides.
+
+  Slots:
+    deck_title, page_number
+    left_value         e.g. "100%" — 32 px white on Langdock Blue
+    right_value        e.g. "<30%" — 32 px ink on grey
+    bottom_left_label  e.g. "AI Potenzial & Technologie" — 24 px book
+    bottom_right_label e.g. "Tatsächliche Nutzung" — 24 px book
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-24 — Potential vs usage bars</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .connectors { position: absolute; inset: 0; pointer-events: none; }
+
+  .bar-left {
+    position: absolute; left: calc(8.33% + 35px); top: 50%;
+    transform: translateY(-50%);
+    width: 135px; height: 436px;
+    background: #4469FC; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bar-left p {
+    margin: 0; color: #F8F8F9; font-size: 32px; line-height: 1.3;
+    letter-spacing: -0.8px; text-align: center;
+  }
+
+  .bar-right-bg {
+    position: absolute; left: calc(83.33% - 10px); top: 50%;
+    transform: translateY(-50%);
+    width: 135px; height: 436px;
+    background: #F4F4F5; border-radius: 8px;
+  }
+  .bar-right-fill {
+    position: absolute; left: calc(83.33% - 10px); top: calc(50% + 152.4px);
+    transform: translateY(-50%);
+    width: 135px; height: 130.8px;
+    background: #D6D6D6; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bar-right-fill p {
+    margin: 0; color: #1A1C21; font-size: 32px; line-height: 1.3;
+    letter-spacing: -0.8px; text-align: center;
+  }
+
+  .center-pill {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px; height: 96px;
+    background: #4469FC; border: 1px solid #BEBEC2; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 24px; letter-spacing: -0.48px;
+  }
+
+  .bl, .br {
+    position: absolute; top: 889px;
+    font-weight: 300; font-size: 24px; line-height: 1.1; letter-spacing: -0.48px;
+    color: #78787A;
+  }
+  .bl { left: calc(8.33% + 59px); width: 757px; text-align: left; }
+  .br { right: calc(8.33% + 59px); width: 319px; text-align: right; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <svg class="connectors" viewBox="0 0 1920 1080">
+      <g fill="none" stroke="#BEBEC2" stroke-width="1.5" opacity="0.6">
+        <path d="M 350 540 C 600 540 700 540 800 540" />
+        <path d="M 1120 540 C 1300 540 1400 540 1600 540" />
+      </g>
+    </svg>
+
+    <div class="bar-left"><p data-slot="left_value">100%</p></div>
+    <div class="bar-right-bg"></div>
+    <div class="bar-right-fill"><p data-slot="right_value">&lt;30%</p></div>
+
+    <div class="center-pill" data-slot="center_logo">Langdock</div>
+
+    <p class="bl" data-slot="bottom_left_label">AI Potenzial &amp; Technologie</p>
+    <p class="br" data-slot="bottom_right_label">Tatsächliche Nutzung</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!--
+  SM-26 — Hub diagram (duplicate of SM-23)
+  Figma node: 750:18440
+
+  Functionally identical to SM-23: model dropdown card on the left, centre
+  Langdock pill, and 7×3 integration icon grid on the right with connecting
+  curves. Kept as a separate file to match the 1:1 Figma master listing.
+
+  See SM-23 for slot detail.
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-26 — Hub: models + integrations</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .connectors { position: absolute; inset: 0; pointer-events: none; }
+
+  .models {
+    position: absolute; left: calc(8.33% + 42px); top: 50%;
+    transform: translateY(-50%);
+    width: 376px; height: 330px;
+    background: #fff; border: 1px solid rgba(26,28,33,0.12);
+    border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 6px; box-sizing: border-box;
+    display: flex; flex-direction: column;
+  }
+  .models .heading {
+    color: #A0A1A6; font-size: 14px; padding: 8px 12px;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+  }
+  .model-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 14px; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    color: #303031; font-size: 20px; letter-spacing: -0.4px;
+  }
+  .model-row.active { background: rgba(26,28,33,0.06); }
+  .model-row .left { display: flex; gap: 11px; align-items: center; }
+  .model-row .icon { width: 24px; height: 24px; background: #E7E8E7; border-radius: 5px; }
+
+  .center-pill {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px; height: 96px;
+    background: #4469FC; border: 1px solid #BEBEC2; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 24px; letter-spacing: -0.48px;
+  }
+
+  .integrations {
+    position: absolute; left: calc(66.67% + 120px); top: 340px;
+    width: 318px;
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .ico {
+    width: 72px; height: 72px;
+    background: #fff; border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #aaa; font-size: 10px;
+  }
+
+  .bl, .br {
+    position: absolute; top: 889px;
+    font-weight: 300; font-size: 24px; line-height: 1.1; letter-spacing: -0.48px;
+    color: #78787A;
+  }
+  .bl { left: calc(8.33% + 59px); width: 757px; }
+  .br { left: calc(66.67% + 126px); width: 757px; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <svg class="connectors" viewBox="0 0 1920 1080">
+      <g fill="none" stroke="#BEBEC2" stroke-width="1.5" opacity="0.5">
+        <path d="M 480 410 C 700 410 700 540 880 540" />
+        <path d="M 480 540 C 700 540 700 540 880 540" />
+        <path d="M 480 670 C 700 670 700 540 880 540" />
+        <path d="M 1040 380 C 1240 380 1240 540 1440 380" />
+        <path d="M 1040 540 C 1240 540 1240 540 1440 540" />
+        <path d="M 1040 700 C 1240 700 1240 540 1440 700" />
+      </g>
+    </svg>
+
+    <div class="models">
+      <p class="heading">Models</p>
+      <div class="model-row"><span class="left"><span class="icon"></span><span data-slot="models.0.label">Google Gemini</span></span><span>›</span></div>
+      <div class="model-row"><span class="left"><span class="icon"></span><span data-slot="models.1.label">OpenAI GPT 5.4</span></span><span>›</span></div>
+      <div class="model-row active"><span class="left"><span class="icon"></span><span data-slot="models.2.label">Claude Sonnet 4.6</span></span><span>›</span></div>
+      <div class="model-row"><span class="left"><span class="icon"></span><span data-slot="models.3.label">Gemini 2.5 Pro</span></span><span>›</span></div>
+      <div class="model-row"><span class="left"><span class="icon"></span><span data-slot="models.4.label">Mistral Large 2411</span></span><span>›</span></div>
+      <div class="model-row"><span class="left"><span class="icon"></span><span data-slot="models.5.label">Llama 3.3 70B</span></span><span>›</span></div>
+    </div>
+
+    <div class="center-pill" data-slot="center_logo">Langdock</div>
+
+    <div class="integrations">
+      <div class="ico" data-slot="integrations.0">●</div><div class="ico" data-slot="integrations.1">●</div>
+      <div class="ico" data-slot="integrations.2">●</div><div class="ico" data-slot="integrations.3">●</div>
+      <div class="ico" data-slot="integrations.4">●</div><div class="ico" data-slot="integrations.5">●</div>
+      <div class="ico" data-slot="integrations.6">●</div><div class="ico" data-slot="integrations.7">●</div>
+      <div class="ico" data-slot="integrations.8">●</div><div class="ico" data-slot="integrations.9">●</div>
+      <div class="ico" data-slot="integrations.10">●</div><div class="ico" data-slot="integrations.11">●</div>
+      <div class="ico" data-slot="integrations.12">●</div><div class="ico" data-slot="integrations.13">●</div>
+      <div class="ico" data-slot="integrations.14">●</div><div class="ico" data-slot="integrations.15">●</div>
+      <div class="ico" data-slot="integrations.16">●</div><div class="ico" data-slot="integrations.17">●</div>
+      <div class="ico" data-slot="integrations.18">●</div><div class="ico" data-slot="integrations.19">●</div>
+      <div class="ico" data-slot="integrations.20">●</div>
+    </div>
+
+    <p class="bl" data-slot="bottom_left_label">6+ Modell Anbieter</p>
+    <p class="br" data-slot="bottom_right_label">50+ Integrationen</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!--
+  SM-27 — 4 numbered cards (steps / prompt elements)
+  Figma node: 750:18409
+
+  Use when: enumerating an ordered list of 4 components (e.g. "Persona →
+  Task → Context → Format"). Each card has a Langdock-Blue circled number
+  (36 px), a short title (24 px), and a longer body with bold keywords
+  inside. Title block at top is 64 px in two lines.
+
+  Slots:
+    deck_title, page_number
+    title_line1, title_line2   1 line each @ 64 px
+    items[0..3].number          glyph (default ❶❷❸❹) — 36 px Langdock Blue
+    items[0..3].title           1 line @ 24 px ink
+    items[0..3].body            3–5 lines @ 24 px book
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-27 — 4 numbered steps</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .content {
+    position: absolute; left: 40px; top: 159px;
+    width: 1840px; height: 849px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; width: 755px; }
+  .title p { margin: 0; }
+
+  .cards { display: flex; gap: 16px; height: 510px; }
+  .card {
+    flex: 1;
+    background: #F4F4F5; border: 1px solid #D7D7D8; border-radius: 12px;
+    padding: 32px;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+  .card .head { display: flex; gap: 8px; align-items: center; }
+  .card .num { color: #4469FC; font-size: 36px; line-height: 1; letter-spacing: -0.72px; }
+  .card .item-title { color: #1A1C21; font-size: 24px; line-height: 1; letter-spacing: -0.48px; }
+  .card .body { margin: 0; color: #78787A; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; }
+  .card .body b { color: #1A1C21; font-weight: 400; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="content">
+      <div class="title">
+        <p data-slot="title_line1">Writing better prompts</p>
+        <p data-slot="title_line2">with prompt elements</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="head">
+            <span class="num" data-slot="items.0.number">❶</span>
+            <span class="item-title" data-slot="items.0.title">Persona</span>
+          </div>
+          <p class="body" data-slot="items.0.body">Define a &ldquo;character&rdquo; you want the LLM to embody. A <b>famous person</b>, a specific <b>job related to the task or the topic</b>.</p>
+        </div>
+
+        <div class="card">
+          <div class="head">
+            <span class="num" data-slot="items.1.number">❷</span>
+            <span class="item-title" data-slot="items.1.title">Task</span>
+          </div>
+          <p class="body" data-slot="items.1.body">This specifies what you want to achieve with the LLM&rsquo;s help. The more clearly defined the task is, the better the LLM can fulfill the specific task.</p>
+        </div>
+
+        <div class="card">
+          <div class="head">
+            <span class="num" data-slot="items.2.number">❸</span>
+            <span class="item-title" data-slot="items.2.title">Context</span>
+          </div>
+          <p class="body" data-slot="items.2.body">Add relevant background information like examples, detailed explanations, uploaded documents to receive more specific answers.</p>
+        </div>
+
+        <div class="card">
+          <div class="head">
+            <span class="num" data-slot="items.3.number">❹</span>
+            <span class="item-title" data-slot="items.3.title">Format</span>
+          </div>
+          <p class="body" data-slot="items.3.body">Set rules for how the LLM should format its answer. You can define the <b>writing style</b>, <b>tone</b>, <b>constraints</b> or the <b>structure of the output</b>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
