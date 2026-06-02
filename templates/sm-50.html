@@ -1,0 +1,82 @@
+<!--
+  SM-50 — Title top-left + image top-right + bottom-left "how it works" list
+  Figma node: 750:16184
+
+  Variant of SM-49: title is placed in the upper-left, the screenshot
+  occupies the right half, and the "How does it work?" numbered list sits
+  at the bottom-left (under the image) using 24 px text.
+
+  Slots:
+    deck_title, page_number
+    title             1–3 lines @ 64 px ink (max-width 665 px)
+    list_label        "How does it work?" — 24 px ink
+    steps[0..3]       1 line each @ 24 px grey
+    image_url         ~1482 × 854 screenshot
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-50 — Title + image + bottom list</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F8F8F9; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .right-block { position: absolute; right: 0; top: 0; width: 950px; height: 1080px; background: #F1F0ED; }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .title {
+    position: absolute; left: 30px; top: 160px;
+    width: 665px;
+    margin: 0; font-weight: 400; font-size: 64px; line-height: 1; letter-spacing: -1.28px; color: #1A1C21;
+  }
+
+  .image {
+    position: absolute; left: calc(50% + 84px); top: 50%;
+    transform: translateY(-50%);
+    width: 1482px; height: 854px;
+    background: url('https://placehold.co/1482x854/EDEDEE/9aa0a6?text=SCREENSHOT') center/cover;
+    box-shadow: 0 15px 48px rgba(0,0,0,0.08);
+  }
+
+  .list-block {
+    position: absolute; left: 40px; top: 848px;
+    width: 1000px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .list-label { margin: 0; font-weight: 400; font-size: 24px; line-height: 1; color: #1A1C21; }
+  .steps  { margin: 0; padding-left: 36px; font-weight: 400; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: #78787A; }
+  .steps li { margin: 0; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <p class="title" data-slot="title">Data Analyst tool lets you analyze CSVs and Excel in Langdock</p>
+
+    <div class="image" data-slot="image_url"></div>
+
+    <div class="list-block">
+      <p class="list-label" data-slot="list_label">How does it work?</p>
+      <ol class="steps">
+        <li data-slot="steps.0">Upload or link your file</li>
+        <li data-slot="steps.1">Describe your task</li>
+        <li data-slot="steps.2">Langdock auto generates Python code to analyse data</li>
+        <li data-slot="steps.3">Results appear instantly</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
