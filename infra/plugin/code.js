@@ -3,6 +3,7 @@
 figma.showUI(__html__, { width: 280, height: 168, themeColors: true });
 
 let lastNode = null;
+const _renderDebug = [];
 
 figma.ui.onmessage = async (msg) => {
   if (!msg || typeof msg !== 'object') return;
@@ -31,6 +32,7 @@ figma.ui.onmessage = async (msg) => {
   if (msg.type === 'render-tree' && msg.tree) {
     const beforeIds = new Set(figma.currentPage.children.map((n) => n.id));
     const existingBoxes = figma.currentPage.children.map(bbox);
+    _renderDebug.length = 0;
     try {
       // Load every font referenced in the tree upfront. Try requested font,
       // fall back to Inter weights when a family isn't available.
@@ -47,7 +49,7 @@ figma.ui.onmessage = async (msg) => {
       figma.ui.postMessage({
         type: 'ok',
         requestId: msg.requestId,
-        result: { id: node.id, name: node.name }
+        result: { id: node.id, name: node.name, _debug: _renderDebug.slice(0, 40) }
       });
     } catch (err) {
       figma.ui.postMessage({
@@ -110,29 +112,38 @@ async function createFromTree(t, fontMap) {
     const fn = fontMap.get(`${t.fontFamily}|${t.fontWeight}|${!!t.italic}`)
             || (await resolveFont(t.fontFamily, t.fontWeight, t.italic));
     const text = figma.createText();
+    // Set ALL typography props BEFORE characters.  Figma measures width when
+    // characters is set, and won't re-measure if fontSize/lineHeight change
+    // afterward — so the final font config has to be in place first.
     text.fontName = fn;
-    text.characters = String(t.characters || '');
     text.fontSize = t.fontSize || 16;
+    if (t.lineHeight) text.lineHeight = t.lineHeight;
+    if (t.letterSpacing) text.letterSpacing = t.letterSpacing;
+    if (t.textAlign === 'center') text.textAlignHorizontal = 'CENTER';
+    else if (t.textAlign === 'right') text.textAlignHorizontal = 'RIGHT';
+
+    if (t.constrained && t.w > 0) {
+      // Fixed width, auto height.  Order: switch to HEIGHT mode first (so
+      // Figma knows width is the constrained axis), resize to target width,
+      // then set characters — auto-resize fills in the height.
+      text.textAutoResize = 'HEIGHT';
+      text.resize(t.w, 1);
+    } else {
+      text.textAutoResize = 'WIDTH_AND_HEIGHT';
+    }
+
+    text.characters = String(t.characters || '');
     text.fills = [{
       type: 'SOLID',
       color: { r: t.color.r, g: t.color.g, b: t.color.b },
       opacity: t.color.a != null ? t.color.a : 1
     }];
-    if (t.lineHeight) text.lineHeight = t.lineHeight;
-    if (t.letterSpacing) text.letterSpacing = t.letterSpacing;
-    if (t.textAlign === 'center') text.textAlignHorizontal = 'CENTER';
-    else if (t.textAlign === 'right') text.textAlignHorizontal = 'RIGHT';
-    if (t.w > 0) {
-      text.textAutoResize = 'HEIGHT';
-      text.resize(t.w, text.height);
-    }
     return text;
   }
 
   // Frame
   const f = figma.createFrame();
   f.name = t.name || 'Frame';
-  f.resize(Math.max(1, t.w), Math.max(1, t.h));
 
   if (t.fill && t.fill.a > 0.001) {
     f.fills = [{
@@ -145,11 +156,18 @@ async function createFromTree(t, fontMap) {
   }
 
   if (t.bgImage) {
-    try {
-      const img = await figma.createImageAsync(t.bgImage);
-      f.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: img.hash }];
-    } catch (_) {
-      // Leave existing fill on failure.
+    // Skip placeholder URLs (placehold.co etc.) — fetching them slows down
+    // imports and they're meaningless visually. Just stub with a grey.
+    if (/placehold\.co/.test(t.bgImage)) {
+      f.fills = [{ type: 'SOLID', color: { r: 0.78, g: 0.78, b: 0.78 } }];
+    } else {
+      try {
+        const img = await figma.createImageAsync(t.bgImage);
+        f.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: img.hash }];
+      } catch (_) {
+        // Fallback to grey so the slot is at least visible.
+        f.fills = [{ type: 'SOLID', color: { r: 0.78, g: 0.78, b: 0.78 } }];
+      }
     }
   }
 
@@ -163,13 +181,77 @@ async function createFromTree(t, fontMap) {
     f.strokeAlign = 'INSIDE';
   }
   if (t.radius) f.cornerRadius = t.radius;
-  f.clipsContent = true;
+  f.clipsContent = !!t.clipsContent;
+
+  // Apply auto-layout if this frame is a flex container.
+  const usingLayout = !!t.layout;
+  _renderDebug.push({
+    name: t.name || f.name,
+    treeHasLayout: !!t.layout,
+    layoutMode: t.layout && t.layout.mode,
+    treeW: t.w, treeH: t.h,
+    children: (t.children || []).length
+  });
+  if (usingLayout) {
+    f.layoutMode = t.layout.mode;
+    f.itemSpacing = t.layout.gap || 0;
+    f.paddingTop    = t.layout.paddingTop    || 0;
+    f.paddingRight  = t.layout.paddingRight  || 0;
+    f.paddingBottom = t.layout.paddingBottom || 0;
+    f.paddingLeft   = t.layout.paddingLeft   || 0;
+    if (t.layout.justify === 'space-between') f.primaryAxisAlignItems = 'SPACE_BETWEEN';
+    else if (t.layout.justify === 'center')   f.primaryAxisAlignItems = 'CENTER';
+    else if (t.layout.justify === 'flex-end') f.primaryAxisAlignItems = 'MAX';
+    if (t.layout.align === 'center')          f.counterAxisAlignItems = 'CENTER';
+    else if (t.layout.align === 'flex-end')   f.counterAxisAlignItems = 'MAX';
+    // Frame sizes itself to its w/h (fixed), not hugged.
+    f.primaryAxisSizingMode = 'FIXED';
+    f.counterAxisSizingMode = 'FIXED';
+  }
+
+  f.resize(Math.max(1, t.w), Math.max(1, t.h));
 
   for (const child of (t.children || [])) {
     const cn = await createFromTree(child, fontMap);
     f.appendChild(cn);
-    cn.x = child.x - t.x;
-    cn.y = child.y - t.y;
+    if (usingLayout && child._absoluteInFlex) {
+      // CSS position:absolute child — take it out of auto-layout flow,
+      // preserve its real x/y from the iframe.
+      try { cn.layoutPositioning = 'ABSOLUTE'; } catch (_) {}
+      cn.x = child.x - t.x;
+      cn.y = child.y - t.y;
+      continue;
+    }
+    if (usingLayout) {
+      // Auto-layout positions this child — never set x/y here.  Below we
+      // just pick the layoutSizing mode.
+      const isPrimaryV = t.layout.mode === 'VERTICAL';
+      const flexFill = (child.flexGrow || 0) > 0;
+      if (cn.type === 'TEXT') {
+        // Width: FIXED when CSS constrained the text (max-width / width),
+        // else HUG to natural content width.
+        if (child.constrained && child.w > 0) cn.layoutSizingHorizontal = 'FIXED';
+        else                                  cn.layoutSizingHorizontal = 'HUG';
+        // Height always hugs content (textAutoResize=HEIGHT already on).
+        cn.layoutSizingVertical = 'HUG';
+      } else {
+        // Frames: FILL when flex-grow > 0; HUG only works when the child is
+        // itself auto-layout, so fall back to FIXED (preserves the resize
+        // dims) for plain frames.
+        const childIsAL = cn.layoutMode && cn.layoutMode !== 'NONE';
+        const huggable = childIsAL ? 'HUG' : 'FIXED';
+        if (isPrimaryV) {
+          cn.layoutSizingVertical   = flexFill ? 'FILL' : huggable;
+          cn.layoutSizingHorizontal = 'FILL';
+        } else {
+          cn.layoutSizingHorizontal = flexFill ? 'FILL' : huggable;
+          cn.layoutSizingVertical   = 'FILL';
+        }
+      }
+    } else {
+      cn.x = child.x - t.x;
+      cn.y = child.y - t.y;
+    }
   }
 
   return f;

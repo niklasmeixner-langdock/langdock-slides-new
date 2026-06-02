@@ -213,6 +213,25 @@
 
   const TEXT_TAGS = new Set(['P','H1','H2','H3','H4','H5','H6','SPAN','LI','BUTTON','LABEL']);
 
+  function makeTextNode(el, style, x, y, w, h, constrained) {
+    return {
+      type: 'text',
+      x, y, w, h,
+      characters: getTextContent(el),
+      fontFamily: extractFontFamily(style.fontFamily),
+      fontSize: parseFloat(style.fontSize),
+      fontWeight: parseInt(style.fontWeight) || 400,
+      italic: style.fontStyle === 'italic',
+      lineHeight: parseLineHeight(style.lineHeight),
+      letterSpacing: parseLetterSpacing(style.letterSpacing),
+      color: parseColor(style.color) || { r: 0, g: 0, b: 0, a: 1 },
+      textAlign: style.textAlign,
+      // constrained: width is fixed (max-width / explicit width).
+      // !constrained: text should size to its natural content width.
+      constrained
+    };
+  }
+
   function walkElement(el, slideRect, win) {
     const style = win.getComputedStyle(el);
     if (style.display === 'none' || style.visibility === 'hidden') return null;
@@ -224,45 +243,105 @@
     const h = Math.round(rect.height);
     if (w <= 0 || h <= 0) return null;
 
-    // Text node: tag is text-ish OR no element children but textContent non-empty
-    const looksLikeText = TEXT_TAGS.has(el.tagName) ||
-      (el.children.length === 0 && el.textContent.trim() !== '');
-
-    if (looksLikeText) {
-      const text = getTextContent(el);
-      if (!text.trim()) return null;
-      return {
-        type: 'text',
-        x, y, w, h,
-        characters: text,
-        fontFamily: extractFontFamily(style.fontFamily),
-        fontSize: parseFloat(style.fontSize),
-        fontWeight: parseInt(style.fontWeight) || 400,
-        italic: style.fontStyle === 'italic',
-        lineHeight: parseLineHeight(style.lineHeight),
-        letterSpacing: parseLetterSpacing(style.letterSpacing),
-        color: parseColor(style.color) || { r: 0, g: 0, b: 0, a: 1 },
-        textAlign: style.textAlign
-      };
-    }
-
     const fill        = parseColor(style.backgroundColor);
     const bgImage     = parseBackgroundImage(style.backgroundImage);
     const borderWidth = parseFloat(style.borderTopWidth) || 0;
     const borderColor = borderWidth ? parseColor(style.borderTopColor) : null;
     const radius      = parseFloat(style.borderTopLeftRadius) || 0;
+    const overflow    = (style.overflow || 'visible').trim();
+    const clipsContent = overflow === 'hidden' || overflow === 'clip' || overflow === 'auto' || overflow === 'scroll';
+    const hasStyling   = !!fill || !!bgImage || borderWidth > 0;
 
+    // Width constrained? If yes, Figma must wrap to that width.
+    // - max-width / width on a block element is a real constraint.
+    // - position:absolute elements get "shrink-to-fit" width from the
+    //   browser even without an explicit width — that's NOT a constraint
+    //   we want to enforce in Figma (Inter renders wider than the iframe's
+    //   fallback font, so forcing the iframe width would clip / wrap).
+    const isAbsolute   = style.position === 'absolute' || style.position === 'fixed';
+    const hasMaxWidth  = style.maxWidth && style.maxWidth !== 'none';
+    const explicitW    = style.width && style.width !== 'auto' && !style.width.startsWith('-');
+    const constrained  = hasMaxWidth || (explicitW && el.children.length === 0 && !isAbsolute);
+
+    // Flex container?
+    const layout = (style.display === 'flex') ? {
+      mode: style.flexDirection && style.flexDirection.startsWith('column') ? 'VERTICAL' : 'HORIZONTAL',
+      gap: parseFloat(style.gap) || parseFloat(style.rowGap) || parseFloat(style.columnGap) || 0,
+      paddingTop: parseFloat(style.paddingTop) || 0,
+      paddingRight: parseFloat(style.paddingRight) || 0,
+      paddingBottom: parseFloat(style.paddingBottom) || 0,
+      paddingLeft: parseFloat(style.paddingLeft) || 0,
+      justify: style.justifyContent,
+      align: style.alignItems
+    } : null;
+
+    // Direct-text element?  No element children but has trimmed textContent.
+    const directText = (el.children.length === 0 && getTextContent(el).trim() !== '');
+    const tagIsTexty = TEXT_TAGS.has(el.tagName);
+
+    // ── Pure text leaf (no bg, no border): emit a single text node.
+    if (!hasStyling && (tagIsTexty || directText)) {
+      const t = makeTextNode(el, style, x, y, w, h, constrained);
+      if (!t.characters.trim()) return null;
+      return t;
+    }
+
+    // ── Styled container with text content only (no element children):
+    // Emit a frame + a centred text child via auto-layout. This handles
+    // pills, badges, and buttons (like the Langdock centre pill on
+    // hub-diagram, status pills on stacked-cards, etc.).
+    if (hasStyling && directText) {
+      const textChild = makeTextNode(el, style, 0, 0, 0, 0, false);
+      if (textChild.characters.trim()) {
+        return {
+          type: 'frame',
+          x, y, w, h,
+          fill, bgImage, borderColor, borderWidth, radius, clipsContent,
+          layout: {
+            mode: 'HORIZONTAL',
+            gap: 0,
+            paddingTop:    parseFloat(style.paddingTop)    || 0,
+            paddingRight:  parseFloat(style.paddingRight)  || 0,
+            paddingBottom: parseFloat(style.paddingBottom) || 0,
+            paddingLeft:   parseFloat(style.paddingLeft)   || 0,
+            justify: 'center',
+            align:   'center'
+          },
+          children: [textChild]
+        };
+      }
+    }
+
+    // ── Plain frame with element children.  Walk them.
     const children = [];
     for (const child of el.children) {
       if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
       const sub = walkElement(child, slideRect, win);
-      if (sub) children.push(sub);
+      if (sub) {
+        const childStyle = win.getComputedStyle(child);
+        const childPos = childStyle.position;
+        if (layout && childPos !== 'absolute' && childPos !== 'fixed') {
+          // Normal flex child: flag it so the sandbox skips explicit x/y
+          // (auto-layout positions it).  KEEP the slide-relative x/y on
+          // the tree node — this child's *own* children still need it to
+          // compute relative positions when the child isn't itself a flex
+          // container.
+          sub._inFlex = true;
+          sub.flexGrow = parseFloat(childStyle.flexGrow) || 0;
+        } else if (layout) {
+          // position:absolute inside a flex parent — keep its computed x/y,
+          // tell the sandbox to take it out of the auto-layout flow.
+          sub._absoluteInFlex = true;
+        }
+        children.push(sub);
+      }
     }
 
     return {
       type: 'frame',
       x, y, w, h,
-      fill, bgImage, borderColor, borderWidth, radius,
+      fill, bgImage, borderColor, borderWidth, radius, clipsContent,
+      layout,
       children
     };
   }
