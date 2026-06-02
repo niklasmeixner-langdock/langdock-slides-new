@@ -1,0 +1,63 @@
+<!--
+  SM-45 — Full-bleed image + bottom-left 64 px headline in light ink
+  Figma node: 750:16237
+
+  Use when: a full-canvas photo cover with a statement headline in light
+  ink at the lower-left. Variant of SM-06 with no gradient overlay.
+
+  Slots:
+    deck_title, page_number
+    bg_image_url       full-bleed 1920 × 1080 image
+    headline_line1     ~30 chars @ 64 px in #F3F4F5
+    headline_line2     ~30 chars @ 64 px
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-45 — Full-bleed image cover with light headline</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #F3F4F5; overflow: hidden;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background: url('https://placehold.co/1920x1080/333/aaa?text=BG') center/cover;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+  .headline {
+    position: absolute;
+    left: 40px; top: 159px;
+    width: 910px;
+    margin: 0;
+    font-weight: 400; font-size: 64px; line-height: 1;
+    letter-spacing: -1.28px; color: #F3F4F5;
+  }
+  .headline p { margin: 0; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="bg" data-slot="bg_image_url"></div>
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+    <div class="headline">
+      <p data-slot="headline_line1">Wir helfen Unternehmen,</p>
+      <p data-slot="headline_line2">KI erfolgreich einzuführen.</p>
+    </div>
+  </div>
+</body>
+</html>
