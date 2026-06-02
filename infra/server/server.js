@@ -135,14 +135,18 @@ async function handleExec(req, res) {
   for await (const chunk of req) body += chunk;
   let parsed;
   try { parsed = JSON.parse(body); } catch { return json(res, 400, { error: 'Invalid JSON' }); }
-  const code = parsed && parsed.code;
-  if (typeof code !== 'string' || !code.trim()) {
-    return json(res, 400, { error: 'Missing `code` (string)' });
+  const isExec = parsed && typeof parsed.code === 'string' && parsed.code.trim();
+  const isRender = parsed && typeof parsed.html === 'string' && parsed.html.trim();
+  if (!isExec && !isRender) {
+    return json(res, 400, { error: 'Missing `code` or `html`' });
   }
   if (clients.size === 0) return json(res, 503, { error: 'No plugin connected' });
 
   const requestId = randomUUID();
-  broadcast(JSON.stringify({ type: 'exec', code, requestId }));
+  const payload = isExec
+    ? { type: 'exec', code: parsed.code, requestId }
+    : { type: 'render-template', html: parsed.html, slots: parsed.slots || {}, name: parsed.name || 'Slide', requestId };
+  broadcast(JSON.stringify(payload));
 
   const result = await new Promise((resolve) => {
     const timer = setTimeout(() => {

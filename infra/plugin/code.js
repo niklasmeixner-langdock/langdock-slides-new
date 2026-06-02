@@ -1,62 +1,20 @@
-// Langdock Slides — remote executor for Figma Plugin API code.
-//
-// The LLM writes Figma Plugin API JavaScript (figma.createFrame, loadFontAsync,
-// createNodeFromSvg, auto-layout, etc.). The bridge forwards that code over a
-// WebSocket; this plugin runs it against the open Figma file.
+// Langdock Slides — remote executor + HTML-template renderer.
 
 figma.showUI(__html__, { width: 280, height: 168, themeColors: true });
 
-// Track the most recently created top-level node so the UI can offer a
-// jump-to link.
 let lastNode = null;
 
 figma.ui.onmessage = async (msg) => {
   if (!msg || typeof msg !== 'object') return;
 
+  // ─── Path A: raw Figma Plugin API code (the original 'exec') ───
   if (msg.type === 'exec' && typeof msg.code === 'string') {
     const beforeIds = new Set(figma.currentPage.children.map((n) => n.id));
     const existingBoxes = figma.currentPage.children.map(bbox);
     try {
       const fn = new Function('figma', `return (async () => { ${msg.code} })();`);
       const result = await fn(figma);
-
-      const created = figma.currentPage.children.filter((n) => !beforeIds.has(n.id));
-
-      // If anything new overlaps the existing canvas, shift the whole new group
-      // to free space on the right (preserving relative positions).
-      if (created.length && existingBoxes.length) {
-        const group = unionBoxes(created.map(bbox));
-        const overlaps = existingBoxes.some((e) => intersects(group, e));
-        if (overlaps) {
-          // Pin to the right of the rightmost existing node, at that node's y.
-          // This places new content beside the outer edge of your work
-          // instead of being pulled up by stray distant nodes.
-          const rightmost = existingBoxes.reduce((a, b) => (a.x + a.w > b.x + b.w ? a : b));
-          const safeX = rightmost.x + rightmost.w + 200;
-          const safeY = rightmost.y;
-          const dx = safeX - group.x;
-          const dy = safeY - group.y;
-          for (const n of created) { n.x += dx; n.y += dy; }
-        }
-      }
-
-      if (created.length) {
-        const n = created[created.length - 1];
-        lastNode = {
-          id: n.id,
-          name: n.name,
-          page: figma.currentPage.name,
-          x: Math.round(n.x),
-          y: Math.round(n.y),
-          width: Math.round(n.width),
-          height: Math.round(n.height),
-          count: created.length
-        };
-        figma.currentPage.selection = created;
-        figma.viewport.scrollAndZoomIntoView(created);
-        figma.ui.postMessage({ type: 'created', node: lastNode });
-      }
-
+      finishCreated(beforeIds, existingBoxes);
       figma.ui.postMessage({ type: 'ok', requestId: msg.requestId, result: safe(result) });
     } catch (err) {
       figma.ui.postMessage({
@@ -69,12 +27,46 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
 
+  // ─── Path B: render a JSON tree produced by the UI's HTML walker ───
+  if (msg.type === 'render-tree' && msg.tree) {
+    const beforeIds = new Set(figma.currentPage.children.map((n) => n.id));
+    const existingBoxes = figma.currentPage.children.map(bbox);
+    try {
+      // Load every font referenced in the tree upfront. Try requested font,
+      // fall back to Inter weights when a family isn't available.
+      const fontUses = collectFonts(msg.tree);
+      const fontMap = new Map(); // 'family|weight|italic' → resolved FontName
+      for (const u of fontUses) {
+        const key = `${u.family}|${u.weight}|${u.italic}`;
+        if (fontMap.has(key)) continue;
+        fontMap.set(key, await resolveFont(u.family, u.weight, u.italic));
+      }
+      const node = await createFromTree(msg.tree, fontMap);
+      figma.currentPage.appendChild(node);
+      finishCreated(beforeIds, existingBoxes);
+      figma.ui.postMessage({
+        type: 'ok',
+        requestId: msg.requestId,
+        result: { id: node.id, name: node.name }
+      });
+    } catch (err) {
+      figma.ui.postMessage({
+        type: 'err',
+        requestId: msg.requestId,
+        message: String(err && err.message || err),
+        stack: err && err.stack
+      });
+    }
+    return;
+  }
+
+  // ─── Focus the last created node ───
   if (msg.type === 'focus' && lastNode) {
     try {
-      const node = await figma.getNodeByIdAsync(lastNode.id);
-      if (node && node.removed !== true) {
-        figma.currentPage.selection = [node];
-        figma.viewport.scrollAndZoomIntoView([node]);
+      const n = await figma.getNodeByIdAsync(lastNode.id);
+      if (n && n.removed !== true) {
+        figma.currentPage.selection = [n];
+        figma.viewport.scrollAndZoomIntoView([n]);
       } else {
         figma.ui.postMessage({ type: 'err', message: 'Last node was removed' });
       }
@@ -84,6 +76,155 @@ figma.ui.onmessage = async (msg) => {
   }
 };
 
+// ─── Auto-placement + selection (shared between exec and render-tree) ───
+function finishCreated(beforeIds, existingBoxes) {
+  const created = figma.currentPage.children.filter((n) => !beforeIds.has(n.id));
+  if (!created.length) return;
+
+  if (existingBoxes.length) {
+    const group = unionBoxes(created.map(bbox));
+    const overlaps = existingBoxes.some((e) => intersects(group, e));
+    if (overlaps) {
+      const rightmost = existingBoxes.reduce((a, b) => (a.x + a.w > b.x + b.w ? a : b));
+      const dx = rightmost.x + rightmost.w + 200 - group.x;
+      const dy = rightmost.y - group.y;
+      for (const n of created) { n.x += dx; n.y += dy; }
+    }
+  }
+
+  const n = created[created.length - 1];
+  lastNode = {
+    id: n.id, name: n.name, page: figma.currentPage.name,
+    x: Math.round(n.x), y: Math.round(n.y),
+    width: Math.round(n.width), height: Math.round(n.height),
+    count: created.length
+  };
+  figma.currentPage.selection = created;
+  figma.viewport.scrollAndZoomIntoView(created);
+  figma.ui.postMessage({ type: 'created', node: lastNode });
+}
+
+// ─── Tree → Figma nodes ───
+async function createFromTree(t, fontMap) {
+  if (t.type === 'text') {
+    const fn = fontMap.get(`${t.fontFamily}|${t.fontWeight}|${!!t.italic}`)
+            || (await resolveFont(t.fontFamily, t.fontWeight, t.italic));
+    const text = figma.createText();
+    text.fontName = fn;
+    text.characters = String(t.characters || '');
+    text.fontSize = t.fontSize || 16;
+    text.fills = [{
+      type: 'SOLID',
+      color: { r: t.color.r, g: t.color.g, b: t.color.b },
+      opacity: t.color.a != null ? t.color.a : 1
+    }];
+    if (t.lineHeight) text.lineHeight = t.lineHeight;
+    if (t.letterSpacing) text.letterSpacing = t.letterSpacing;
+    if (t.textAlign === 'center') text.textAlignHorizontal = 'CENTER';
+    else if (t.textAlign === 'right') text.textAlignHorizontal = 'RIGHT';
+    if (t.w > 0) {
+      text.textAutoResize = 'HEIGHT';
+      text.resize(t.w, text.height);
+    }
+    return text;
+  }
+
+  // Frame
+  const f = figma.createFrame();
+  f.name = t.name || 'Frame';
+  f.resize(Math.max(1, t.w), Math.max(1, t.h));
+
+  if (t.fill && t.fill.a > 0.001) {
+    f.fills = [{
+      type: 'SOLID',
+      color: { r: t.fill.r, g: t.fill.g, b: t.fill.b },
+      opacity: t.fill.a != null ? t.fill.a : 1
+    }];
+  } else {
+    f.fills = [];
+  }
+
+  if (t.bgImage) {
+    try {
+      const img = await figma.createImageAsync(t.bgImage);
+      f.fills = [{ type: 'IMAGE', scaleMode: 'FILL', imageHash: img.hash }];
+    } catch (_) {
+      // Leave existing fill on failure.
+    }
+  }
+
+  if (t.borderColor && t.borderWidth) {
+    f.strokes = [{
+      type: 'SOLID',
+      color: { r: t.borderColor.r, g: t.borderColor.g, b: t.borderColor.b },
+      opacity: t.borderColor.a != null ? t.borderColor.a : 1
+    }];
+    f.strokeWeight = t.borderWidth;
+    f.strokeAlign = 'INSIDE';
+  }
+  if (t.radius) f.cornerRadius = t.radius;
+  f.clipsContent = true;
+
+  for (const child of (t.children || [])) {
+    const cn = await createFromTree(child, fontMap);
+    f.appendChild(cn);
+    cn.x = child.x - t.x;
+    cn.y = child.y - t.y;
+  }
+
+  return f;
+}
+
+// ─── Font resolution with Inter fallback ───
+async function resolveFont(family, weight, italic) {
+  const style = pickStyle(weight, italic);
+  // Try requested family first
+  try {
+    const fn = { family, style };
+    await figma.loadFontAsync(fn);
+    return fn;
+  } catch (_) {}
+  // Fall back to Inter
+  const fallbacks = [
+    { family: 'Inter', style },
+    { family: 'Inter', style: italic ? 'Regular Italic' : 'Regular' },
+    { family: 'Inter', style: 'Regular' }
+  ];
+  for (const fn of fallbacks) {
+    try { await figma.loadFontAsync(fn); return fn; } catch (_) {}
+  }
+  // Last resort
+  const fn = { family: 'Inter', style: 'Regular' };
+  await figma.loadFontAsync(fn);
+  return fn;
+}
+
+function pickStyle(weight, italic) {
+  let w;
+  if (weight <= 250) w = 'Thin';
+  else if (weight <= 350) w = 'Light';      // STK Bureau "Book"-ish, Inter "Light"
+  else if (weight <= 450) w = 'Regular';
+  else if (weight <= 550) w = 'Medium';
+  else if (weight <= 650) w = 'Semi Bold';
+  else if (weight <= 750) w = 'Bold';
+  else if (weight <= 850) w = 'Extra Bold';
+  else w = 'Black';
+  if (italic) {
+    return w === 'Regular' ? 'Italic' : `${w} Italic`;
+  }
+  return w;
+}
+
+function collectFonts(tree, out) {
+  out = out || [];
+  if (tree.type === 'text') {
+    out.push({ family: tree.fontFamily, weight: tree.fontWeight || 400, italic: !!tree.italic });
+  }
+  for (const child of (tree.children || [])) collectFonts(child, out);
+  return out;
+}
+
+// ─── Geometry helpers ───
 function bbox(n) { return { x: n.x, y: n.y, w: n.width, h: n.height }; }
 function intersects(a, b) {
   return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);

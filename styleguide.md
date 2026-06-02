@@ -55,6 +55,94 @@ multiple sampled masters.
 | Cost    | `#DC3027` | Negative / cost lines       |
 | Savings | `#2B733D` | Positive / savings lines    |
 
+## Themes
+
+A theme is a `{ canvas, ink, sub-ink }` triplet applied to a whole slide. Most
+archetypes accept any theme; pick one based on the slide's emotional tone (the
+deck doesn't need to stay on one theme — alternating cools/sage with the
+default cream keeps things lively across a chapter).
+
+| Theme         | Canvas bg | Ink (primary) | Sub-ink     | Nav variant | Use when                                  |
+| ------------- | --------- | ------------- | ----------- | ----------- | ----------------------------------------- |
+| **Cream**     | `#F1F0ED` | `#1A1C21`     | `#78787A`   | light       | Default. Warm, brand-neutral.             |
+| **Cool**      | `#F8F8F9` | `#1A1C21`     | `#78787A`   | light       | Crisp, product-focused content.           |
+| **Sage**      | `#DBE8E6` | `#1A1C21`     | `#3D4E4A`   | light       | Calm chapter, "trust" / "secure" tone.    |
+| **Sky**       | `#B6CEE2` | `#1A1C21`     | `#3A4F65`   | light       | Cool, optimistic, "discovery" tone.       |
+| **Warm grey** | `#D8D5CB` | `#1A1C21`     | `#5C5A52`   | light       | Refined, business-case tone.              |
+| **Beige**     | `#F0EBE3` | `#1A1C21`     | `#78787A`   | light       | Soft alternate to Cream.                  |
+| **Dark brown**| `#4D473C` | `#F3F4F5`     | `#C8C2B0`   | dark        | Serious / formal chapter divider.         |
+| **Near-black**| `#292929` | `#F3F4F5`     | `#B3B3B3`   | dark        | High-impact statement, "executive" tone.  |
+| **Langdock Blue** | `#4469FC` | `#F8F8F9` | `#EBEBEB`   | dark        | Reserved — see *Accent rules* below.      |
+
+Use sparingly: at most 2–3 theme switches per deck. Default to Cream for
+content slides; reserve dark themes for section dividers and statement
+slides. Langdock Blue is **never** a slide-canvas theme except for a rare
+hero declaration.
+
+## Component treatments
+
+Most multi-element slides (4-card grids, stacked lists, stat rows) support a
+"treatment" that controls how individual components are coloured. The
+treatments are mutually exclusive — pick one per slide.
+
+### Treatment: `neutral` (default)
+
+Every component is the same.
+
+| Property | Value |
+| -------- | ----- |
+| Card fill | `#F4F4F5` (or `#fff` on Cool canvas) |
+| Card border | `1 px solid #D7D7D8` |
+| Card title | `#1A1C21` 24 px Regular |
+| Card body | `rgba(26,28,33,0.55)` 24 px Book |
+
+Use for: parallel feature lists where no single item should stand out.
+
+### Treatment: `pastel-rotation`
+
+Distribute pastel fills across siblings. No borders. Best on Cool / Cream
+canvas (the canvas reads as white-ish, so the pastel cards pop).
+
+Palette (rotate in order — wrap if more than 4 items):
+
+| Position | Card fill   | Card title | Card body                      |
+| -------- | ----------- | ---------- | ------------------------------ |
+| 1        | `#B6CEE2`   | `#1A1C21`  | `rgba(26,28,33,0.65)`          |
+| 2        | `#D8D5CB`   | `#1A1C21`  | `rgba(26,28,33,0.65)`          |
+| 3        | `#EBEBEB`   | `#1A1C21`  | `rgba(26,28,33,0.55)`          |
+| 4        | `#DBE8E6`   | `#1A1C21`  | `rgba(26,28,33,0.65)`          |
+
+Use for: when each item is conceptually distinct (e.g. four different
+properties of a system) and the variety helps the reader pause on each.
+
+### Treatment: `highlight`
+
+One component in Langdock Blue with light text, the rest neutral.
+
+| Property of highlighted card | Value |
+| ---------------------------- | ----- |
+| Card fill | `#4469FC` |
+| Card border | none |
+| Card title | `#F8F8F9` |
+| Card body | `#EBEBEB` |
+
+The remaining cards stay `neutral`. Use for: drawing the eye to a single
+property — "active state", "today's focus", "the answer", "the
+differentiator". Exactly **one** card per slide gets this treatment.
+
+## Accent rules — when to reach for Langdock Blue (`#4469FC`)
+
+Langdock Blue is the loudest colour in the system. Use it deliberately:
+
+- ✅ **One hero metric card** per slide (e.g. "ROI nach 12 Monaten >2 000 %")
+- ✅ **One highlighted card** in a multi-card grid (treatment: `highlight`)
+- ✅ **Active state** on tab rows, model pickers, toggles
+- ✅ **The centre pill** in hub-diagram slides ("Langdock" connecting models
+  and integrations)
+- ❌ Never as a slide-canvas theme (except a single declarative cover)
+- ❌ Never for body text or sub-headings
+- ❌ Never on more than one element per slide
+
 ## Typography
 
 **Font families** — both must be loaded:

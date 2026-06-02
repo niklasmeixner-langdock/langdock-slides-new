@@ -68,7 +68,6 @@
   </div>
 
 <script>
-  // Local dev: ws://localhost:4000. Swap to wss://<your-railway>.up.railway.app before publishing.
   const WS_URL = 'ws://localhost:4000';
 
   const dot     = document.getElementById('dot');
@@ -81,6 +80,7 @@
 
   let ws = null;
   let reconnectTimer = null;
+  const pendingRequests = new Map(); // requestId → bool (so we know to ack on success)
 
   function setStatus(state, text, sub) {
     dot.className = 'dot' + (state === 'live' ? ' live' : state === 'err' ? ' err' : '');
@@ -107,12 +107,34 @@
 
     ws.onopen = () => setStatus('live', 'Live', 'Waiting for the next call…');
 
-    ws.onmessage = (ev) => {
+    ws.onmessage = async (ev) => {
       let msg;
       try { msg = JSON.parse(ev.data); } catch { return; }
+
+      // Existing path: raw code exec.
       if (msg && msg.type === 'exec' && typeof msg.code === 'string') {
         setStatus('live', 'Running…');
         parent.postMessage({ pluginMessage: msg }, '*');
+        return;
+      }
+
+      // New path: render a template.
+      if (msg && msg.type === 'render-template' && typeof msg.html === 'string') {
+        setStatus('live', 'Rendering…');
+        pendingRequests.set(msg.requestId, true);
+        try {
+          const tree = await buildTreeFromHtml(msg.html, msg.slots || {});
+          tree.name = msg.name || 'Slide';
+          parent.postMessage({ pluginMessage: {
+            type: 'render-tree',
+            requestId: msg.requestId,
+            tree
+          } }, '*');
+        } catch (err) {
+          send({ type: 'result', requestId: msg.requestId, ok: false, error: String(err && err.message || err) });
+          setStatus('err', 'Render error', String(err && err.message || err));
+        }
+        return;
       }
     };
 
@@ -140,6 +162,164 @@
       send({ type: 'result', requestId: m.requestId, ok: false, error: m.message, stack: m.stack });
     }
   };
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // HTML → tree.  Runs inside the plugin UI iframe (real DOM + CSS engine).
+  // We render the template into a hidden 1920×1080 iframe, substitute slots,
+  // let the browser compute layout, then walk the DOM emitting a JSON tree
+  // the sandbox can turn into Figma nodes.
+  // ──────────────────────────────────────────────────────────────────────────
+
+  async function buildTreeFromHtml(html, slots) {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:1920px;height:1080px;border:0;';
+    iframe.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(iframe);
+
+    await new Promise((resolve) => {
+      iframe.addEventListener('load', resolve, { once: true });
+      iframe.srcdoc = html;
+    });
+
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+
+    // Slot substitution.
+    for (const [slot, value] of Object.entries(slots)) {
+      doc.querySelectorAll(`[data-slot="${cssEscape(slot)}"]`).forEach((el) => {
+        if (/image|url|portrait/.test(slot) && typeof value === 'string') {
+          el.style.backgroundImage = `url("${value}")`;
+        } else {
+          el.textContent = value;
+        }
+      });
+    }
+
+    // Two RAFs to make sure layout has settled.
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const slideEl = doc.querySelector('.slide');
+    if (!slideEl) { iframe.remove(); throw new Error('No .slide element'); }
+    const slideRect = slideEl.getBoundingClientRect();
+
+    const tree = walkElement(slideEl, slideRect, win);
+
+    iframe.remove();
+    if (!tree) throw new Error('Walker returned null root');
+    return tree;
+  }
+
+  function cssEscape(s) { return String(s).replace(/(["\\])/g, '\\$1'); }
+
+  const TEXT_TAGS = new Set(['P','H1','H2','H3','H4','H5','H6','SPAN','LI','BUTTON','LABEL']);
+
+  function walkElement(el, slideRect, win) {
+    const style = win.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') return null;
+
+    const rect = el.getBoundingClientRect();
+    const x = Math.round(rect.left - slideRect.left);
+    const y = Math.round(rect.top  - slideRect.top );
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    if (w <= 0 || h <= 0) return null;
+
+    // Text node: tag is text-ish OR no element children but textContent non-empty
+    const looksLikeText = TEXT_TAGS.has(el.tagName) ||
+      (el.children.length === 0 && el.textContent.trim() !== '');
+
+    if (looksLikeText) {
+      const text = getTextContent(el);
+      if (!text.trim()) return null;
+      return {
+        type: 'text',
+        x, y, w, h,
+        characters: text,
+        fontFamily: extractFontFamily(style.fontFamily),
+        fontSize: parseFloat(style.fontSize),
+        fontWeight: parseInt(style.fontWeight) || 400,
+        italic: style.fontStyle === 'italic',
+        lineHeight: parseLineHeight(style.lineHeight),
+        letterSpacing: parseLetterSpacing(style.letterSpacing),
+        color: parseColor(style.color) || { r: 0, g: 0, b: 0, a: 1 },
+        textAlign: style.textAlign
+      };
+    }
+
+    const fill        = parseColor(style.backgroundColor);
+    const bgImage     = parseBackgroundImage(style.backgroundImage);
+    const borderWidth = parseFloat(style.borderTopWidth) || 0;
+    const borderColor = borderWidth ? parseColor(style.borderTopColor) : null;
+    const radius      = parseFloat(style.borderTopLeftRadius) || 0;
+
+    const children = [];
+    for (const child of el.children) {
+      if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
+      const sub = walkElement(child, slideRect, win);
+      if (sub) children.push(sub);
+    }
+
+    return {
+      type: 'frame',
+      x, y, w, h,
+      fill, bgImage, borderColor, borderWidth, radius,
+      children
+    };
+  }
+
+  function getTextContent(el) {
+    let result = '';
+    for (const node of el.childNodes) {
+      if (node.nodeType === 3) {                     // text
+        result += node.textContent;
+      } else if (node.nodeName === 'BR') {
+        result += '\n';
+      } else if (node.nodeType === 1) {
+        result += getTextContent(node);
+      }
+    }
+    // Collapse runs of whitespace inside a line, but keep \n.
+    return result.replace(/[ \t]+/g, ' ').replace(/^ +| +$/gm, '');
+  }
+
+  function extractFontFamily(ff) {
+    // CSS gives a comma-separated list; first name is the requested family.
+    const first = String(ff).split(',')[0].trim().replace(/^["']|["']$/g, '');
+    return first || 'Inter';
+  }
+
+  function parseColor(str) {
+    if (!str) return null;
+    if (str === 'transparent' || str === 'rgba(0, 0, 0, 0)') return null;
+    let m = str.match(/rgba?\(([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+))?\)/);
+    if (!m) return null;
+    return {
+      r: parseFloat(m[1]) / 255,
+      g: parseFloat(m[2]) / 255,
+      b: parseFloat(m[3]) / 255,
+      a: m[4] !== undefined ? parseFloat(m[4]) : 1
+    };
+  }
+
+  function parseBackgroundImage(str) {
+    if (!str || str === 'none') return null;
+    const m = str.match(/url\((["']?)(.+?)\1\)/);
+    return m ? m[2] : null;
+  }
+
+  function parseLineHeight(lh) {
+    if (!lh || lh === 'normal') return null;
+    const px = parseFloat(lh);
+    if (Number.isFinite(px)) return { value: px, unit: 'PIXELS' };
+    return null;
+  }
+
+  function parseLetterSpacing(ls) {
+    if (!ls || ls === 'normal') return null;
+    const px = parseFloat(ls);
+    if (Number.isFinite(px) && px !== 0) return { value: px, unit: 'PIXELS' };
+    return null;
+  }
 
   connect();
 </script>

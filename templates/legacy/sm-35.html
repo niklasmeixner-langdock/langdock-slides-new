@@ -1,0 +1,140 @@
+<!--
+  SM-35 — Two-tone headline + body left, 2 stacked growth charts right
+  Figma node: 750:16492
+
+  Use when: showing growth across two related metrics over the same time
+  window. Left side: 48 px two-tone headline + 32 px supporting paragraphs.
+  Right side: two line charts stacked vertically, each with its own label,
+  a y-axis (5–6 ticks), and Apr/Jul date markers on the x-axis.
+
+  Slots:
+    deck_title, page_number
+    eyebrow, headline   48 px two-tone (ink + grey)
+    body                2 paragraphs @ 32 px grey
+    chart_a.label       1 line @ 28 px grey ("3x Monatlich Aktive Nutzer")
+    chart_a.image_url   ~470 × 160 line chart
+    chart_a.y_labels    5 strings ("25k", "20k", ...)
+    chart_a.x_start     "Apr 24"
+    chart_a.x_end       "Jul 25"
+    chart_b same shape
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-35 — Two growth charts</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 160px;
+    width: 810px;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+  .headline { margin: 0; font-weight: 400; font-size: 48px; line-height: 1.1; letter-spacing: -0.96px; }
+  .headline .eyebrow { color: #1A1C21; }
+  .headline .body    { color: #78787A; }
+  .body-text { margin: 0; font-weight: 400; font-size: 32px; line-height: 1.3; letter-spacing: -0.8px; color: #78787A; width: 686px; }
+  .body-text p { margin: 0 0 24px; }
+  .body-text p:last-child { margin-bottom: 0; }
+
+  .charts {
+    position: absolute; left: calc(58.33% + 5px); top: 50%;
+    transform: translateY(-50%);
+    width: 561px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .chart .label { margin: 0 0 32px; font-weight: 400; font-size: 28px; line-height: 1.35; letter-spacing: -0.42px; color: #717279; }
+  .chart .plot {
+    position: relative;
+    width: 547px; height: 270px;
+    background:
+      url('https://placehold.co/547x270/F4F4F5/9aa0a6?text=GROWTH+CURVE') center/contain no-repeat;
+  }
+  .chart .plot .y-axis {
+    position: absolute; left: 0; top: 0; bottom: 20px;
+    width: 40px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-size: 18px; line-height: 1; letter-spacing: -0.27px;
+    color: #717279; text-align: right;
+  }
+  .chart .plot .y-axis span { display: block; }
+  .chart .plot .x-axis {
+    position: absolute; left: 50px; right: 0; bottom: 0;
+    display: flex; justify-content: space-between;
+    font-size: 18px; line-height: 1; letter-spacing: -0.27px;
+    color: #717279;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <p class="headline">
+        <span class="eyebrow" data-slot="eyebrow">Mercks myGPT Geschichte</span><br>
+        <span class="body"    data-slot="headline">myGPT Ergebnisse</span>
+      </p>
+      <div class="body-text" data-slot="body">
+        <p>Vor der Einführung Langdocks (April 2024) erreichte myGPT 9.000 monatlich aktive Nutzer.</p>
+        <p>Mit Langdock haben sie ihre monatlich aktiven Nutzer auf über 33.000 verdreifacht und in den letzten 12 Monaten mehr als 10 Millionen Prompts versendet.</p>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart">
+        <p class="label" data-slot="chart_a.label">3× Monatlich Aktive Nutzer</p>
+        <div class="plot" data-slot="chart_a.image_url">
+          <div class="y-axis">
+            <span data-slot="chart_a.y_labels.0">25k</span>
+            <span data-slot="chart_a.y_labels.1">20k</span>
+            <span data-slot="chart_a.y_labels.2">15k</span>
+            <span data-slot="chart_a.y_labels.3">10k</span>
+            <span data-slot="chart_a.y_labels.4">5k</span>
+            <span data-slot="chart_a.y_labels.5">0</span>
+          </div>
+          <div class="x-axis">
+            <span data-slot="chart_a.x_start">Apr 24</span>
+            <span data-slot="chart_a.x_end">Jul 25</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart">
+        <p class="label" data-slot="chart_b.label">10× Monatliche Nachrichten</p>
+        <div class="plot" data-slot="chart_b.image_url">
+          <div class="y-axis">
+            <span data-slot="chart_b.y_labels.0">1M</span>
+            <span data-slot="chart_b.y_labels.1">750k</span>
+            <span data-slot="chart_b.y_labels.2">500k</span>
+            <span data-slot="chart_b.y_labels.3">250k</span>
+            <span data-slot="chart_b.y_labels.4">0</span>
+          </div>
+          <div class="x-axis">
+            <span data-slot="chart_b.x_start">Apr 24</span>
+            <span data-slot="chart_b.x_end">Jul 25</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
