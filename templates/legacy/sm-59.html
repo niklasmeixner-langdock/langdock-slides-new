@@ -1,0 +1,54 @@
+<!--
+  SM-59 — Centred "Recommendation" eyebrow + big statement
+  Figma node: 750:16097
+
+  Use when: a recommendation / call-out slide. 36 px eyebrow above a 64 px
+  centred statement.
+
+  Slots:
+    deck_title, page_number
+    eyebrow      e.g. "Recommendation" — 36 px ink centred
+    statement    1–2 lines @ 64 px ink centred, max-width 1250 px
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-59 — Recommendation centred</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F1F0ED; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .center {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; gap: 40px;
+    text-align: center;
+    color: #1A1C21;
+  }
+  .eyebrow   { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; }
+  .statement { margin: 0; font-weight: 400; font-size: 64px; line-height: 1; letter-spacing: -1.28px; width: 1250px; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="center">
+      <p class="eyebrow"   data-slot="eyebrow">Recommendation</p>
+      <p class="statement" data-slot="statement">Make it scalable by saving the prompt to the prompt library or building an assistant</p>
+    </div>
+  </div>
+</body>
+</html>

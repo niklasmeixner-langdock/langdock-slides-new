@@ -1,0 +1,87 @@
+<!--
+  SM-40 — Title + subtitle left, right cream panel + large shadowed image
+  Figma node: 750:16292
+
+  Variant of SM-04 with a cream-colored right panel under the image (1482 ×
+  854) and a wider title column (796 px). Includes the bottom-left
+  "Additional information" footnote block.
+
+  Slots:
+    deck_title, page_number
+    title         1–2 lines @ 64 px ink (max 796 px)
+    subtitle      2–4 lines @ 36 px grey (max 796 px)
+    image_url     ~1482 × 854 screenshot
+    info_label, info_body
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-40 — Title + right image (wide)</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .right-block { position: absolute; right: 0; top: 0; width: 950px; height: 1080px; background: #F1F0ED; }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .text {
+    position: absolute; left: 30px; top: 160px;
+    width: 796px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title    { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; }
+  .subtitle { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; color: #78787A; }
+
+  .image {
+    position: absolute;
+    left: calc(50% + 70px); top: 50%;
+    transform: translateY(-50%);
+    width: 1482px; height: 854px;
+    background: url('https://placehold.co/1482x854/EDEDEE/9aa0a6?text=IMAGE') center/cover;
+    box-shadow: 0 15px 48px rgba(0,0,0,0.08);
+  }
+
+  .info {
+    position: absolute; left: 40px; top: 889px;
+    width: 601px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .info-label { margin: 0; font-weight: 400; font-size: 24px; line-height: 1; color: #1A1C21; }
+  .info-body  { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.15; color: #78787A; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="text">
+      <p class="title"    data-slot="title">From Chatbot to general-purpose AI Agents</p>
+      <p class="subtitle" data-slot="subtitle">Langdock is building towards doing more for you. Here&rsquo;s what we have shipped and what is coming next.</p>
+    </div>
+
+    <div class="image" data-slot="image_url"></div>
+
+    <div class="info">
+      <p class="info-label" data-slot="info_label">Additional information</p>
+      <p class="info-body"  data-slot="info_body">Treat the language model like a newly joined colleague: they understand the general topic you are working in, but not the specific project.</p>
+    </div>
+  </div>
+</body>
+</html>

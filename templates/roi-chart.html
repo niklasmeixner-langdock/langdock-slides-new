@@ -1,0 +1,256 @@
+<!--
+  SM-37 — ROI chart: dual-axis line chart + sidebar metric cards
+  Figma node: 750:16425
+
+  Use when: presenting an ROI calculation or a multi-phase cost/savings
+  curve. Left sidebar (~22 %) holds the headline metric + licence breakdown;
+  the chart (~78 %) shows months along x and currency along y.
+
+  Slots:
+    deck_title          1 line @ 12.8 px — ~32 chars
+    page_number         "P. N"
+    eyebrow             "ROI Berechnung" — 48 px black
+    headline            "Hoher ROI bereits…" — 48 px grey, continues
+    phase_labels[0..2]  { name, hours }   1 line each @ 18 px
+    chart_image_url     full-bleed chart art (1264 × 365)
+    y_axis_labels[0..3] 1 line each @ 16 px
+    x_axis_labels[0..11] e.g. "Monat 1"–"Monat 12"
+    legend.cost         "Kosten" — red label
+    legend.savings      "Gesamtersparnis" — green label
+    hero_metric.eyebrow "ROI nach 12 Monaten"
+    hero_metric.value   ">2.000%" — 36 px, white on Langdock Blue
+    license.label       "Langdock Platform"
+    license.value       "Lizenzgebühr"
+    token_cost.label    "LLM Token Kosten"
+    token_cost.value    "Nutzungsbasiert"
+    token_cost.note     14 px caption
+    footnote            14 px disclaimer
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-37 — ROI</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21;
+    overflow: hidden;
+  }
+
+  .nav-left, .nav-right {
+    position: absolute; top: 30px;
+    color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400;
+  }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider {
+    position: absolute; left: 40px; width: 1840px; height: 1px;
+    background: #BEBEC2;
+  }
+  .divider.top    { top: 104px; }
+  .divider.bottom { top: 1040px; }
+
+  /* Two-tone headline */
+  .headline {
+    position: absolute; left: 40px; top: 160px;
+    width: 1220px;
+    margin: 0;
+    font-weight: 400; font-size: 48px; line-height: 1.1;
+    letter-spacing: -0.96px;
+  }
+  .headline .eyebrow { color: #1A1C21; }
+  .headline .body    { color: #78787A; }
+
+  /* Sidebar — left 418px */
+  .sidebar {
+    position: absolute; left: 40px; top: 309px;
+    width: 418px; height: 710px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .hero-metric {
+    background: #4469FC;
+    border-radius: 8px;
+    height: 150px;
+    padding: 24px 20px 20px 20px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .hero-metric .eyebrow {
+    margin: 0; color: #EBEBEB;
+    font-size: 18px; line-height: 20px; letter-spacing: -0.36px;
+  }
+  .hero-metric .value {
+    margin: 0; color: #F8F8F9;
+    font-size: 36px; line-height: 1.3; letter-spacing: -0.9px;
+    font-weight: 400;
+  }
+  .sidebar .group {
+    display: flex; flex-direction: column; gap: 32px;
+  }
+  .kv { display: flex; flex-direction: column; gap: 8px; }
+  .kv .k { margin: 0; color: #78787A; font-size: 18px; line-height: 20px; letter-spacing: -0.36px; }
+  .kv .v { margin: 0; color: #1A1C21; font-size: 18px; line-height: 20px; letter-spacing: -0.36px; }
+  .kv-note { margin: 0; color: #78787A; font-size: 14px; line-height: 18px; }
+  .sidebar .footnote {
+    margin: 0; color: #717279;
+    font-size: 14px; line-height: 18px;
+  }
+
+  /* Main area — right 1228px */
+  .main {
+    position: absolute; left: 478px; top: 309px;
+    width: 1402px; height: 710px;
+  }
+  .phases {
+    position: absolute; left: 0; top: 0; right: 0;
+    display: flex; justify-content: space-between;
+    gap: 24px;
+  }
+  .phase {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 14px;
+    font-size: 18px; line-height: 20px; letter-spacing: -0.36px;
+  }
+  .phase .name  { margin: 0; color: #78787A; font-weight: 400; }
+  .phase .value { margin: 0; color: #1A1C21; font-weight: 400; }
+
+  /* Phase background panels */
+  .phase-bg-1 {
+    position: absolute; left: 0; top: 0;
+    width: 235px; height: 712px;
+    background: #F8F8F9;
+    border-radius: 8px;
+  }
+  .phase-bg-2 {
+    position: absolute; right: 0; top: 0;
+    width: 597px; height: 712px;
+    background: #F8F8F9;
+    border-radius: 8px;
+  }
+
+  .chart {
+    position: absolute; left: 64px; top: 182px;
+    width: 1264px; height: 365px;
+    background-image: url('https://placehold.co/1264x365/F8F8F9/D7D7D8?text=CHART');
+    background-size: cover;
+  }
+  .x-axis {
+    position: absolute; left: 64px; top: 563px;
+    width: 1238px;
+    display: flex; justify-content: space-between;
+    font-size: 16px; line-height: 20px; letter-spacing: -0.32px;
+    color: #78787A;
+  }
+  .x-axis p { margin: 0; }
+  .y-axis {
+    position: absolute; left: 0; top: 176px;
+    width: 59px; height: 377px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    align-items: flex-end;
+    font-size: 16px; line-height: 20px; letter-spacing: -0.32px;
+    color: #78787A; text-align: right;
+  }
+  .y-axis p { margin: 0; }
+
+  .legend-cost {
+    position: absolute; right: 0; top: 478px;
+    font-size: 18px; line-height: 20px; letter-spacing: -0.36px;
+    color: #DC3027;
+  }
+  .legend-savings {
+    position: absolute; right: 0; top: 92px;
+    font-size: 18px; line-height: 20px; letter-spacing: -0.36px;
+    color: #2B733D;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">12</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <p class="headline">
+      <span class="eyebrow" data-slot="eyebrow">ROI Berechnung</span><br>
+      <span class="body"    data-slot="headline">Hoher ROI bereits bei Standardanwendungsfällen</span>
+    </p>
+
+    <aside class="sidebar">
+      <div class="group">
+        <div class="hero-metric">
+          <p class="eyebrow" data-slot="hero_metric.eyebrow">ROI nach 12 Monaten</p>
+          <p class="value"   data-slot="hero_metric.value">&gt;2.000%</p>
+        </div>
+        <div class="kv">
+          <p class="k" data-slot="license.label">Langdock Platform</p>
+          <p class="v" data-slot="license.value">Lizenzgebühr</p>
+        </div>
+        <div class="kv">
+          <p class="k" data-slot="token_cost.label">LLM Token Kosten</p>
+          <p class="v" data-slot="token_cost.value">Nutzungsbasiert</p>
+          <p class="kv-note" data-slot="token_cost.note">2€ / Nutzer / Monat, ungefähr, basierend auf der Nutzung vergleichbarer Unternehmen.</p>
+        </div>
+      </div>
+      <p class="footnote" data-slot="footnote">*Eingesparte Zeit pro Monat. Es gibt bislang noch keine Standardmethode zur präzisen Berechnung des ROI bei der Einführung von KI. Dennoch möchten wir einige konservative Zahlen unserer Kunden zur Verfügung stellen.</p>
+    </aside>
+
+    <div class="main">
+      <div class="phase-bg-1"></div>
+      <div class="phase-bg-2"></div>
+
+      <div class="phases">
+        <div class="phase">
+          <p class="name"  data-slot="phase_labels.0.name">Explorationsphase</p>
+          <p class="value" data-slot="phase_labels.0.hours">1.5h / Monat / Nutzer*</p>
+        </div>
+        <div class="phase">
+          <p class="name"  data-slot="phase_labels.1.name">Umsetzungsphase</p>
+          <p class="value" data-slot="phase_labels.1.hours">4h / Monat / Nutzer*</p>
+        </div>
+        <div class="phase">
+          <p class="name"  data-slot="phase_labels.2.name">Produktivitätsphase</p>
+          <p class="value" data-slot="phase_labels.2.hours">8h / Monat / Nutzer*</p>
+        </div>
+      </div>
+
+      <div class="y-axis">
+        <p data-slot="y_axis_labels.0">€4.5 mio</p>
+        <p data-slot="y_axis_labels.1">€3 mio</p>
+        <p data-slot="y_axis_labels.2">€1.5 mio</p>
+        <p data-slot="y_axis_labels.3">€0</p>
+      </div>
+
+      <div class="chart" data-slot="chart_image_url"></div>
+
+      <div class="x-axis">
+        <p data-slot="x_axis_labels.0">Monat 1</p>
+        <p data-slot="x_axis_labels.1">Monat 2</p>
+        <p data-slot="x_axis_labels.2">Monat 3</p>
+        <p data-slot="x_axis_labels.3">Monat 4</p>
+        <p data-slot="x_axis_labels.4">Monat 5</p>
+        <p data-slot="x_axis_labels.5">Monat 6</p>
+        <p data-slot="x_axis_labels.6">Monat 7</p>
+        <p data-slot="x_axis_labels.7">Monat 8</p>
+        <p data-slot="x_axis_labels.8">Monat 9</p>
+        <p data-slot="x_axis_labels.9">Monat 10</p>
+        <p data-slot="x_axis_labels.10">Monat 11</p>
+        <p data-slot="x_axis_labels.11">Monat 12</p>
+      </div>
+
+      <p class="legend-savings" data-slot="legend.savings">Gesamtersparnis</p>
+      <p class="legend-cost"    data-slot="legend.cost">Kosten</p>
+    </div>
+
+  </div>
+</body>
+</html>

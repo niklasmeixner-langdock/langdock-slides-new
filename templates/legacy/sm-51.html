@@ -1,0 +1,110 @@
+<!--
+  SM-51 — Prompt-element teaching slide: title + annotated prompt card
+  Figma node: 750:16160
+
+  Use when: teaching the 4 prompt elements (Persona / Task / Context /
+  Format) by annotating a real prompt. Left: 64 px title + 36 px sub-label
+  + body paragraph. Right: a large rounded prompt card with 4 paragraphs;
+  annotation labels (❶❷❸❹) sit between left text and prompt card.
+
+  Slots:
+    deck_title, page_number
+    title_line1        "Use Prompt Elements to" — 64 px
+    title_line2        "give relevant context" — 64 px
+    sub_label          "How much context is needed?" — 36 px ink
+    body               1–2 lines @ 36 px grey
+    prompt_paragraphs  4 paragraphs @ 24 px ink (in white card)
+    labels[0..3]       Persona / Task / Context / Format — 24 px muted
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-51 — Prompt elements teaching</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F8F8F9; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .right-block { position: absolute; right: 0; top: 0; width: 1920px; height: 1080px; background: #F1F0ED; clip-path: inset(0 0 0 50%); }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 159px;
+    width: 755px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; }
+  .title p { margin: 0; }
+  .body-block { display: flex; flex-direction: column; gap: 24px; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; }
+  .sub-label { margin: 0; color: #1A1C21; }
+  .body-text { margin: 0; color: #78787A; }
+
+  .annotations {
+    position: absolute; left: calc(50% + 67px); top: 247px;
+    width: 181px;
+  }
+  .annotation {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    margin-bottom: 46px;
+  }
+  .annotation:last-child { margin-bottom: 0; }
+  .annotation .name { color: rgba(45,45,46,0.6); font-size: 24px; line-height: 1.35; letter-spacing: -0.36px; }
+  .annotation .num  { color: #4469FC; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; }
+
+  .prompt-card {
+    position: absolute;
+    left: calc(58.33% + 107px); top: 50%;
+    transform: translateY(calc(-50% + 13px));
+    width: 600px;
+    background: #fff; border: 1px solid #D7D7D8;
+    border-radius: 32px 32px 4px 32px;
+    padding: 32px;
+    font-size: 24px; line-height: 1.35; letter-spacing: -0.36px; color: #1A1C21;
+  }
+  .prompt-card p { margin: 0 0 44px; }
+  .prompt-card p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <div class="title">
+        <p data-slot="title_line1">Use Prompt Elements to</p>
+        <p data-slot="title_line2">give relevant context</p>
+      </div>
+      <div class="body-block">
+        <p class="sub-label" data-slot="sub_label">How much context is needed?</p>
+        <p class="body-text" data-slot="body">Treat the language model like a newly joined colleague: they understand the general topic you are working in, but not the specific project.</p>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <div class="annotation"><span class="name" data-slot="labels.0">Persona</span><span class="num" data-slot="labels.0.num">❶</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.1">Task</span><span class="num" data-slot="labels.1.num">❷</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.2">Context</span><span class="num" data-slot="labels.2.num">❸</span></div>
+      <div class="annotation"><span class="name" data-slot="labels.3">Format</span><span class="num" data-slot="labels.3.num">❹</span></div>
+    </div>
+
+    <div class="prompt-card" data-slot="prompt_paragraphs">
+      <p>You are a customer support assistant responsible for writing messages to our customers.</p>
+      <p>Write an email draft that I can send out to the customer answering their questions.</p>
+      <p>This is one of our key customers. The customer gave us detailed feedback what they would like to see in the product. These feature requests include a dark mode for our product. We have implemented the dark mode recently and want to let them know. See our documentation attached.</p>
+      <p>Write in a friendly, informal manner. Maximum 5 sentences.</p>
+    </div>
+  </div>
+</body>
+</html>

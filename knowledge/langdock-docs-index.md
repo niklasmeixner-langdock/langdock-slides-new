@@ -1,0 +1,241 @@
+# Docs
+
+## Docs
+
+- [Manage Agents](https://docs.langdock.com/administration/agent-management.md): Workspace administrators can manage agents across the organization, including verifying trusted agents, highlighting featured agents, and handling disabled or unassigned agents.
+- [API Key Best Practices](https://docs.langdock.com/administration/api-key-best-practices.md): Keep your Langdock API keys safe and secure with these best practices for key management.
+- [API Usage Export](https://docs.langdock.com/administration/api-usage-export.md): Export detailed API key usage data to CSV format for cost analysis, monitoring, and billing reconciliation.
+- [Extra Usage](https://docs.langdock.com/administration/extra-usage.md): Enable extra usage so users can continue using all models after reaching their included limits.
+- [Identifying Use Cases](https://docs.langdock.com/administration/identify-use-cases.md): This guide helps you understand what great use cases are and how to identify them for your organization.
+- [Integration Scopes and Action Access](https://docs.langdock.com/administration/integration-scopes-actions.md): Control which OAuth scopes Langdock requests for each integration, manage when new actions are enabled in your workspace, and review the access status of every action.
+- [Integrations Guide](https://docs.langdock.com/administration/integrations-guide.md): Best practices, common use cases, and troubleshooting for Langdock integrations
+- [Integrations Permissions](https://docs.langdock.com/administration/integrations-permissions.md): Here's how to set up granular permissions for integrations. These permissions let you control which users can access specific integration actions. By default, all users have access to all integrations.
+- [Ashby](https://docs.langdock.com/administration/integrations/ashby.md): Connect Ashby to Langdock to manage your recruiting pipeline directly from your conversations
+- [Azure AI Search](https://docs.langdock.com/administration/integrations/azure-search.md): Connect Azure AI Search to Langdock to run semantic vector searches over your indexed documents
+- [Databricks](https://docs.langdock.com/administration/integrations/databricks.md): Connect Databricks to Langdock to explore your Unity Catalog and discover data assets from your conversations
+- [Google Maps](https://docs.langdock.com/administration/integrations/google-maps.md): Connect Google Maps to Langdock to search places, geocode addresses, and get directions from your conversations
+- [Looker](https://docs.langdock.com/administration/integrations/looker.md): Connect Looker to Langdock to query your BI dashboards and run data analyses from your conversations
+- [Luma](https://docs.langdock.com/administration/integrations/luma.md): Connect Luma to Langdock to manage events, guests, and calendars from your conversations
+- [Metabase](https://docs.langdock.com/administration/integrations/metabase.md): Connect Metabase to Langdock to query databases and access dashboards from your conversations
+- [Microsoft Entra](https://docs.langdock.com/administration/integrations/microsoft-entra.md): Connect Microsoft Entra to Langdock to search your organization's user directory from your conversations
+- [ServiceNow](https://docs.langdock.com/administration/integrations/service-now.md): Connect ServiceNow to Langdock to manage incidents, tasks, and configuration items from your conversations
+- [Zoom](https://docs.langdock.com/administration/integrations/zoom.md): Connect Zoom to Langdock to manage meetings, access recordings, and retrieve transcripts from your conversations
+- [Invoices](https://docs.langdock.com/administration/invoices.md): Access, download, and understand your Langdock invoices, including pro-rated billing when adding or removing team members.
+- [Useful Links](https://docs.langdock.com/administration/legal-compliance.md): Below you'll find all key links for legal and compliance topics, especially those related to security and privacy.
+- [Microsoft Integrations: Permissions & Admin Approval](https://docs.langdock.com/administration/microsoft-admin-approval.md): Understand Microsoft permission types, grant admin consent, and review what permissions Langdock requires for Microsoft integrations.
+- [Get Started](https://docs.langdock.com/administration/onboarding-guide.md): The Get Started guide walks new users through Langdock step by step. Admins can customize it with tasks that point to internal resources.
+- [Permission Recommendations](https://docs.langdock.com/administration/permissions.md): Configure role-based permissions for Members, Editors, and Admins in your Langdock workspace.
+- [Plans](https://docs.langdock.com/administration/plans.md): Upgrade users to Business Max to give them higher included usage limits.
+- [Pricing](https://docs.langdock.com/administration/pricing.md): Understand Langdock's pricing structure for Chat & Agents, Workflows, and API access.
+- [Rollout Playbook](https://docs.langdock.com/administration/rollout-playbook.md): A proven playbook for enterprise AI rollouts, based on successful implementations with our customers.
+- [Rollout Setup](https://docs.langdock.com/administration/rollout-setup.md): Rolling out AI works differently than rolling out other software tools. Here is the ideal setup we have seen in successful rollouts.
+- [Shared Slack Channel](https://docs.langdock.com/administration/slack-channel.md): Set up a shared Slack channel with Langdock for direct communication, fast support, and product updates.
+- [Subscription](https://docs.langdock.com/administration/subscription.md): Subscribe to Langdock, manage your billing cycle, upgrade plans, and handle payments.
+- [Shared Teams Channel](https://docs.langdock.com/administration/teams-channel.md): Set up a shared Microsoft Teams channel with Langdock for direct communication, fast support, and product updates.
+- [Tips and tricks for your internal channels](https://docs.langdock.com/administration/tips-and-tricks-internal.md): In this article you'll find little messages containing tips and tricks which you can publish in your internal channels to share little bits of knowledge.
+- [Usage Exports](https://docs.langdock.com/administration/usage-exports.md): Export detailed usage analytics from your Langdock workspace to CSV format for external analysis, reporting, and compliance purposes.
+- [Manage Workflows](https://docs.langdock.com/administration/workflow-settings.md): Configure workspace-level security controls and spending limits for workflows.
+- [Workspace Setup](https://docs.langdock.com/administration/workspace-setup.md): Configure your Langdock workspace from initial setup to full customization. This guide covers security, branding, capabilities, and user management.
+- [Agents Completions API](https://docs.langdock.com/api-endpoints/agent/agent.md): Creates a model response for a given Agent using Vercel AI SDK compatible format.
+- [Sharing Agents with API Keys](https://docs.langdock.com/api-endpoints/agent/agent-api-guide.md): Learn how to create an API key in Langdock and share an agent with it for programmatic access.
+- [Agent Create API](https://docs.langdock.com/api-endpoints/agent/agent-create.md): Create a new agent programmatically
+- [Agent Disable API](https://docs.langdock.com/api-endpoints/agent/agent-disable.md): Enable or disable an agent programmatically
+- [Agent Get API](https://docs.langdock.com/api-endpoints/agent/agent-get.md): Retrieve details of an existing agent
+- [Agent Migration Guide](https://docs.langdock.com/api-endpoints/agent/agent-migration.md): How to migrate agents between Langdock workspaces using the Agents API
+- [Models for Agent API](https://docs.langdock.com/api-endpoints/agent/agent-models.md): Retrieve all available models for use with the Agent API.
+- [Agent Publish API](https://docs.langdock.com/api-endpoints/agent/agent-publish.md): Publish a draft agent as a new version
+- [Agent Update API](https://docs.langdock.com/api-endpoints/agent/agent-update.md): Update an existing agent programmatically
+- [Upload Attachment API](https://docs.langdock.com/api-endpoints/agent/upload-attachments.md): Upload files to be used with Agents
+- [API Introduction](https://docs.langdock.com/api-endpoints/api-introduction.md): Integrate Langdock's powerful AI capabilities into your applications with our comprehensive API suite
+- [Assistants Completions API](https://docs.langdock.com/api-endpoints/assistant/assistant.md): Creates a model response for a given Assistant.
+- [Sharing Assistants with API Keys](https://docs.langdock.com/api-endpoints/assistant/assistant-api-guide.md): Learn how to create an API key in Langdock and share an assistant with it for programmatic access.
+- [Assistant Create API](https://docs.langdock.com/api-endpoints/assistant/assistant-create.md): Create a new Assistant programmatically
+- [Assistant Disable API](https://docs.langdock.com/api-endpoints/assistant/assistant-disable.md): Enable or disable an assistant programmatically
+- [Assistant Get API](https://docs.langdock.com/api-endpoints/assistant/assistant-get.md): Retrieve details of an existing Assistant
+- [Assistant Migration Guide](https://docs.langdock.com/api-endpoints/assistant/assistant-migration.md): How to migrate Assistants between Langdock workspaces using the Assistant API
+- [Models for Assistant API](https://docs.langdock.com/api-endpoints/assistant/assistant-models.md): Retrieve all available models for use with the Assistant API.
+- [Migrating from Assistants API to Agents API](https://docs.langdock.com/api-endpoints/assistant/assistant-to-agent-migration.md): Guide to migrating your integration from the legacy Assistants API to the new Agents API
+- [Assistant Update API](https://docs.langdock.com/api-endpoints/assistant/assistant-update.md): Update an existing Assistant programmatically
+- [Upload Attachment API](https://docs.langdock.com/api-endpoints/assistant/upload-attachments.md): Upload files to be used with Assistants
+- [Introduction to Audit Logs](https://docs.langdock.com/api-endpoints/audit-logs/intro-to-audit-logs-api.md): Retrieve a record of actions performed in your workspace — who did what, when, and from where.
+- [List Audit Logs](https://docs.langdock.com/api-endpoints/audit-logs/list-audit-logs.md): Retrieve a paginated list of audit log entries for your workspace.
+- [Anthropic Messages](https://docs.langdock.com/api-endpoints/completion/anthropic.md): Creates a model response given a structured list of input messages using the Anthropic API.
+- [Google Completion API](https://docs.langdock.com/api-endpoints/completion/google.md): Generate text with Google Gemini models through Langdock's public API. Supports normal and streaming completions and is fully compatible with the official Vertex AI SDKs (Python / Node).
+- [Codestral](https://docs.langdock.com/api-endpoints/completion/mistral.md): Code generation using the Codestral model from Mistral.
+- [OpenAI Chat completion](https://docs.langdock.com/api-endpoints/completion/openai.md): Creates a model response for the given chat conversation using an OpenAI model.
+- [OpenAI Embeddings](https://docs.langdock.com/api-endpoints/embedding/openai-embedding.md): Creates embeddings for text using OpenAI's embedding models
+- [Create Action](https://docs.langdock.com/api-endpoints/integrations/create-action.md): Add an action to an integration that agents can execute
+- [Create Integration](https://docs.langdock.com/api-endpoints/integrations/create-integration.md): Create a new custom integration in your workspace
+- [Create Trigger](https://docs.langdock.com/api-endpoints/integrations/create-trigger.md): Add a trigger to an integration that can start workflows or agent conversations
+- [Delete Action](https://docs.langdock.com/api-endpoints/integrations/delete-action.md): Delete an action from an integration
+- [Delete Trigger](https://docs.langdock.com/api-endpoints/integrations/delete-trigger.md): Delete a trigger from an integration
+- [Get Integration](https://docs.langdock.com/api-endpoints/integrations/get-integration.md): Retrieve details of a specific integration
+- [Integrations API Overview](https://docs.langdock.com/api-endpoints/integrations/integrations-overview.md): Programmatically create and manage custom integrations in your Langdock workspace
+- [List Integrations](https://docs.langdock.com/api-endpoints/integrations/list-integrations.md): Retrieve all integrations available in your workspace
+- [Update Action](https://docs.langdock.com/api-endpoints/integrations/update-action.md): Update an existing action in an integration
+- [Update Auth Configuration](https://docs.langdock.com/api-endpoints/integrations/update-auth.md): Configure authentication for a custom integration
+- [Update Integration](https://docs.langdock.com/api-endpoints/integrations/update-integration.md): Update an existing integration's properties
+- [Update Trigger](https://docs.langdock.com/api-endpoints/integrations/update-trigger.md): Update an existing trigger in an integration
+- [Delete Attachment from Knowledge Folder](https://docs.langdock.com/api-endpoints/knowledge-folder/delete-attachment.md): Remove a file from a knowledge folder
+- [Retrieve Files from Knowledge Folder](https://docs.langdock.com/api-endpoints/knowledge-folder/retrieve-files.md): List all files in a knowledge folder or get details for a specific file
+- [Search Knowledge Folders](https://docs.langdock.com/api-endpoints/knowledge-folder/search-knowledge-folder.md): Perform semantic search across knowledge folders shared with your API key
+- [Share Folders with the API](https://docs.langdock.com/api-endpoints/knowledge-folder/sharing.md): The following guide explains how to create an API key in Langdock and share a folder with the API key.
+- [Update Attachment in Knowledge Folder](https://docs.langdock.com/api-endpoints/knowledge-folder/update-attachment.md): Replace an existing file in a knowledge folder with a new version
+- [Upload File to Knowledge Folder](https://docs.langdock.com/api-endpoints/knowledge-folder/upload-file.md): Upload a new file to a knowledge folder
+- [Export Agent Usage](https://docs.langdock.com/api-endpoints/usage-export/export-agents.md): API endpoint to export agent usage data including message counts, active users, and trends
+- [Export Model Usage](https://docs.langdock.com/api-endpoints/usage-export/export-models.md): API endpoint to export AI model usage data including request counts and token consumption
+- [Export Project Usage](https://docs.langdock.com/api-endpoints/usage-export/export-projects.md): API endpoint to export project activity data including involved users and resource consumption
+- [Export User Usage](https://docs.langdock.com/api-endpoints/usage-export/export-users.md): API endpoint to export user activity data including message counts and usage patterns (subject to privacy settings)
+- [Introduction to Usage Export](https://docs.langdock.com/api-endpoints/usage-export/intro-to-usage-export-api.md): Comprehensive guide to using the Usage Export API for exporting user, agent, project, and model usage data.
+- [Deactivate User](https://docs.langdock.com/api-endpoints/user-management/deactivate-user.md): Remove a user from your Langdock workspace while preserving their data
+- [Invite Users](https://docs.langdock.com/api-endpoints/user-management/invite.md): Programmatically invite users to your Langdock workspace via email
+- [Advanced Agent Features](https://docs.langdock.com/product/agents/advanced-features.md): Organize, manage, and optimize your agents with labels, pinning, duplication, owner transfer, conversation starters, and admin controls.
+- [Agent Configuration](https://docs.langdock.com/product/agents/configuration.md): There are different tools you can use to configure the agent and tailor it to your specific use case.
+- [Form Fields](https://docs.langdock.com/product/agents/form-fields.md): Configure form input fields for your agents to collect structured information from users before starting a conversation.
+- [Introduction to Agents](https://docs.langdock.com/product/agents/introduction.md): Agents are specialized chatbots you can configure for specific use cases or documents. They work like regular chat, but with saved context (documents and instructions) so you don't need to set up the same conversation repeatedly.
+- [Subagents](https://docs.langdock.com/product/agents/subagents.md): Attach specialized agents to a parent agent to split responsibilities and delegate tasks, instead of overloading a single agent's instructions.
+- [Agent Templates](https://docs.langdock.com/product/agents/templates.md): Agent templates are pre-built agent configurations that you can browse, preview, and import to your workspace. Use templates to quickly get started with proven setups for common use cases.
+- [Agent Usage Insights](https://docs.langdock.com/product/agents/usage-insights.md): Agent Usage Insights shows data on agent usage and user feedback. Use this page to review activity metrics, analyze feedback, and export data for further analysis.
+- [Actions in Chat](https://docs.langdock.com/product/chat/actions-in-chat.md): Access any integration, Agent, Folder, or saved prompt directly in chat using the @ symbol for seamless workflow integration.
+- [Company Knowledge](https://docs.langdock.com/product/chat/company-knowledge.md): Search across your connected integrations to find answers in your company's documents, messages, and data.
+- [Data Analysis](https://docs.langdock.com/product/chat/data-analysis.md): To process tabular files like CSVs, Google Sheets or Excel Sheets, you can use the data analyst that uses Python. Here is how to use it.
+- [Deep Research](https://docs.langdock.com/product/chat/deep-research.md): Deep Research creates comprehensive, citable reports by conducting strategic web searches and synthesizing findings from multiple sources.
+- [Document Editor](https://docs.langdock.com/product/chat/document-editor.md): The Document Editor opens as a panel in your chat so you can write and format documents, or build interactive applications with code, without leaving the conversation.
+- [Document Search](https://docs.langdock.com/product/chat/document-search.md): Search and analyze uploaded documents using AI-powered text extraction and semantic search.
+- [Basic Chat functionalities](https://docs.langdock.com/product/chat/functionalities.md): To select a model and interact with the messages and responses in the chat, there are a few functionalities in the chat. These are the model selector in the top left corner and the buttons to interact with prompts and responses.
+- [Image Analysis (Vision)](https://docs.langdock.com/product/chat/image-analysis.md): A few models are capable of processing images and taking them into account for their answer generation. This works because these models have multimodal capabilities, meaning they can understand both text and visual content simultaneously. You can use this to extract text from documents, describe wha…
+- [Image Generation](https://docs.langdock.com/product/chat/image-generation.md): To generate images based on your text input, you can use the image generation tool. Here, the model you selected sends a prompt to an image generation model from our providers, which are specifically built for image generation.
+- [Knowledge Folders](https://docs.langdock.com/product/chat/knowledge-folders.md): Organize and search through collections of documents in your chats using Knowledge Folders. Build a reusable knowledge base that can be shared across your team.
+- [Memory](https://docs.langdock.com/product/chat/memory.md): Memory offers deeper personal customization of the model's behavior, by allowing them to remember information from past interactions.
+- [Mermaid Diagrams](https://docs.langdock.com/product/chat/mermaid.md): Create interactive flowcharts, process diagrams, and visualizations with AI-generated Mermaid code in Langdock
+- [Projects](https://docs.langdock.com/product/chat/projects.md): Group related chats with shared files and custom instructions for better workflow organization
+- [Prompt Library](https://docs.langdock.com/product/chat/prompt-library.md): Save, organize, and share your best prompts with the prompt library. Use variables for flexible templates and collaborate with your team.
+- [Web Search](https://docs.langdock.com/product/chat/web-search.md): AI models have knowledge cutoffs because they can't learn new information after training. To access current information or web results, you can use the Web Search tool.
+- [Workflows](https://docs.langdock.com/product/chat/workflows.md): Trigger automated workflows directly from chat — mention them with @ or use them through agents.
+- [Agent-to-Agent Protocol (A2A)](https://docs.langdock.com/product/integrations/a2a-protocol.md): A2A is an open protocol enabling AI agents to communicate and collaborate across platforms. Learn how to build and connect A2A-compatible agents.
+- [Connections](https://docs.langdock.com/product/integrations/connections.md): Learn how connections work in Langdock, including authentication types, ownership, and sharing options for agents and workflows.
+- [Integration Directory](https://docs.langdock.com/product/integrations/integration-directory.md): Browse all integrations available in Langdock. Connect your existing tools to use them directly in chat, agents, and workflows.
+- [Introduction to Integrations](https://docs.langdock.com/product/integrations/introduction.md): Integrations connect Langdock to the tools your team already uses. Instead of switching between apps to look something up or take action, you can do it directly from your conversation.
+- [MCP Server Directory](https://docs.langdock.com/product/integrations/mcp-directory.md): A curated directory of verified MCP servers you can connect to Langdock. All servers listed here are officially maintained by their respective companies.
+- [Introduction](https://docs.langdock.com/product/introduction.md): Welcome to the product section of our knowledge base! This section is designed for users of our platform and provides an in-depth understanding of each of our products.
+- [File Templates](https://docs.langdock.com/product/library/file-templates.md): Upload documents and presentations as reusable templates. Anyone in your workspace can then use them to generate new files in the same format and style.
+- [Folders](https://docs.langdock.com/product/library/folders.md): Organize and search through collections of documents in your chats using Folders. Build a reusable knowledge base that can be shared across your team.
+- [Introduction to Library](https://docs.langdock.com/product/library/introduction.md): The Library brings all file-related functionality into one place: create new files, manage Folders, and access every file you've generated or uploaded.
+- [Recent Files](https://docs.langdock.com/product/library/recent-files.md): Access every file generated or uploaded in your Langdock workspace from one place. Preview, download, organize, and manage files without digging through individual chats.
+- [Creating Skills](https://docs.langdock.com/product/skills/creating-skills.md): Three ways to create a Skill: write instructions manually, generate them with chat, or upload a SKILL.md file or ZIP bundle.
+- [Introduction to Skills](https://docs.langdock.com/product/skills/introduction.md): Skills are reusable instruction sets that activate automatically in chat, giving every response the right context without extra setup.
+- [Skills and Integrations](https://docs.langdock.com/product/skills/skills-integrations.md): Attach integrations to a Skill so their actions become available automatically whenever the Skill is active in a chat.
+- [System Skills](https://docs.langdock.com/product/skills/system-skills.md): Built-in Skills that are always active for every user in Langdock, with no installation or configuration required.
+- [Workspace Skills](https://docs.langdock.com/product/skills/workspace-skills.md): Deploy Skills across your entire workspace as defaults or mandated rules so every user benefits from day one.
+- [Core Concepts](https://docs.langdock.com/product/workflows/core-concepts.md): Understand the fundamental building blocks of workflows including nodes, triggers, connections, and execution.
+- [Cost Management](https://docs.langdock.com/product/workflows/cost-management.md): Understand workflow costs and learn strategies to optimize spending while maintaining performance.
+- [Field Modes](https://docs.langdock.com/product/workflows/field-modes.md): Configure node fields with Auto, Manual, and AI Prompt modes.
+- [Getting Started](https://docs.langdock.com/product/workflows/getting-started.md): Build your first workflow with this step-by-step guide. Learn how to create a simple automation that processes form submissions with AI.
+- [Human in the Loop](https://docs.langdock.com/product/workflows/human-in-the-loop.md): Pause workflow execution and require manual approval before proceeding.
+- [Introduction to Workflows](https://docs.langdock.com/product/workflows/introduction.md): Build powerful AI-driven automations by connecting AI agents, integrations, and custom logic into multi-step workflows.
+- [Action](https://docs.langdock.com/product/workflows/nodes/action-node.md): Perform actions in connected applications like creating tasks, sending messages, or updating records.
+- [Agent](https://docs.langdock.com/product/workflows/nodes/agent-node.md): Use AI to analyze data, make decisions, generate content, and extract structured information.
+- [Code](https://docs.langdock.com/product/workflows/nodes/code-node.md): Write JavaScript or Python code directly from within your workflow.
+- [Condition](https://docs.langdock.com/product/workflows/nodes/condition-node.md): Route workflow execution down different paths based on conditions and logic.
+- [Delay](https://docs.langdock.com/product/workflows/nodes/delay-node.md): Add a pause to your workflow execution between 1 second and 24 hours.
+- [File Search](https://docs.langdock.com/product/workflows/nodes/file-search-node.md): Search and retrieve information from your folders to enrich workflows with organizational knowledge.
+- [Form Trigger](https://docs.langdock.com/product/workflows/nodes/form-trigger.md): Start workflows from custom form submissions with built-in validation and public access options.
+- [Guardrails](https://docs.langdock.com/product/workflows/nodes/guardrails-node.md): Validate AI outputs and workflow data with automated checks for safety, accuracy, and compliance.
+- [HTTP Request](https://docs.langdock.com/product/workflows/nodes/http-request-node.md): Make HTTP requests to external APIs for custom integrations and data fetching.
+- [Image Generation](https://docs.langdock.com/product/workflows/nodes/image-generation-node.md): Generate images from text prompts using AI models in your workflows.
+- [Integration Trigger](https://docs.langdock.com/product/workflows/nodes/integration-trigger.md): Start workflows automatically when events occur in your connected applications.
+- [Loop](https://docs.langdock.com/product/workflows/nodes/loop-node.md): Iterate over arrays and process multiple items with the same logic.
+- [Manual Trigger](https://docs.langdock.com/product/workflows/nodes/manual-trigger.md): Run workflows on-demand with a button click for testing and ad-hoc processing.
+- [Send Notification](https://docs.langdock.com/product/workflows/nodes/notification-node.md): Send in-app notifications to your Langdock inbox.
+- [Output](https://docs.langdock.com/product/workflows/nodes/output-node.md): Capture and persist a value as the final result of your workflow run.
+- [Scheduled Trigger](https://docs.langdock.com/product/workflows/nodes/scheduled-trigger.md): Run workflows automatically on a recurring schedule with flexible timing options.
+- [Web Search](https://docs.langdock.com/product/workflows/nodes/web-search-node.md): Search the internet and retrieve relevant information for fact-checking and research.
+- [Webhook Trigger](https://docs.langdock.com/product/workflows/nodes/webhook-trigger.md): Receive HTTP POST requests to trigger workflows and integrate with external systems.
+- [Variable Usage](https://docs.langdock.com/product/workflows/variable-usage.md): Learn how to access, reference, and work with variables across your workflow nodes to build dynamic and powerful automations.
+- [Workflow Builder](https://docs.langdock.com/product/workflows/workflow-builder.md): Design and automate processes through a conversational AI interface that generates complete workflows from natural language descriptions.
+- [Agent Configurator Template](https://docs.langdock.com/resources/agent-configurator.md): This agent helps you to build other agents for specific use cases. You can use the configuration below and paste it in an agent in your workspace.
+- [Creating an Agent](https://docs.langdock.com/resources/agent-creation.md): This guide shows you how to build an agent. We will use an example of an onboarding agent, but the steps and considerations can be used with any use case.
+- [Agent Use Cases](https://docs.langdock.com/resources/agent-templates.md): We have collected a list of agents and use cases to inspire you how to utilize Langdock for your specific needs. Let us know if you need more details or have additional requests.
+- [Basics of AI models](https://docs.langdock.com/resources/basics.md): This is a basic guide to understand the fundamentals of how AI models work. It lays the foundation for deeper concepts explained in this guide.
+- [Chain Prompts](https://docs.langdock.com/resources/chain-prompts.md): Break down complex tasks into smaller, manageable steps to guide AI through systematic execution and ensure comprehensive results.
+- [How to use the Slack Bot](https://docs.langdock.com/resources/chatbots/slack.md): Use Langdock models and Agents directly in Slack
+- [How to use the Teams Bot](https://docs.langdock.com/resources/chatbots/teams-bot.md): Use Langdock models and agents directly in Microsoft Teams
+- [Langdock Cheat Sheet](https://docs.langdock.com/resources/cheat-sheet.md): Your essential companion for getting the most out of Langdock
+- [Context Window](https://docs.langdock.com/resources/context-window.md): Learn how chat context works, how the context window indicator helps you manage it, and how context usage differs from usage limits.
+- [Custom instructions](https://docs.langdock.com/resources/custom-instructions.md): Provide custom instructions to improve responses.
+- [Dictionary](https://docs.langdock.com/resources/dictionary.md): Understand the most crucial terms in the AI world with this guide.
+- [When do I attach a file to a chat, when to an agent and when do I use a folder?](https://docs.langdock.com/resources/faq/attachments.md): Learn when to attach files directly to chats or agents versus using folders based on file quantity, length, and usage frequency.
+- [How long are files saved in Langdock?](https://docs.langdock.com/resources/faq/data-retention-for-files.md): Understand how long files are stored in Langdock and how data retention policies affect chats, agents, and folders.
+- [Why is there a limit of 20 files in the chat and in agents?](https://docs.langdock.com/resources/faq/file-limit.md): Learn why chats and agents have a 20-file attachment limit and how to work with larger document collections using folders.
+- [How does a file attachment work and how is it different to a file in a folder?](https://docs.langdock.com/resources/faq/knowledge-folders-and-direct-attachments.md): Understand the difference between direct file attachments and folders, including how each processes documents for AI responses.
+- [When are newly released models available in Langdock?](https://docs.langdock.com/resources/faq/model-availability.md): Learn when newly released AI models become available in Langdock and why EU deployment takes longer than US availability.
+- [Why can I not add a repository to a chat / an agent / a folder?](https://docs.langdock.com/resources/faq/repository-in-knowledge-folder.md): Understand why full repositories cannot be added to Langdock and learn the best practices for working with code files.
+- [Can I share a chat with Langdock Support?](https://docs.langdock.com/resources/faq/share-chat-with-support.md): Learn when you can share a conversation with Langdock Support, what Support can access, and how long access lasts.
+- [Which file types does Langdock support?](https://docs.langdock.com/resources/faq/supported-file-types.md): Complete reference of supported file types in Langdock including text, tabular, image, and audio files with size limits.
+- [Why can I not upload Excel Files / CSVs to a folder?](https://docs.langdock.com/resources/faq/tabular-files-in-knowledge-folders.md): Learn why Excel and CSV files cannot be added to folders and how to work with tabular data in Langdock.
+- [Feature Overview](https://docs.langdock.com/resources/feature-overview.md): Complete list of Langdock features and capabilities
+- [Further Resources](https://docs.langdock.com/resources/further-resources.md): Looking to level up your prompt engineering skills? We've curated these resources to help you master the craft, from foundational concepts to advanced techniques.
+- [Clear and Specific Instructions](https://docs.langdock.com/resources/instructions.md): Learn how to provide clear and specific instructions to guide AI responses and avoid vague, generic outputs.
+- [Action Builder Agent](https://docs.langdock.com/resources/integrations/agent.md): This agent helps you write actions for your integration. Simply add relevant documentation, describe your use case, and chat with the agent to write the JavaScript.
+- [Bring Your Own OAuth Client](https://docs.langdock.com/resources/integrations/bring-your-own-oauth.md): Set up your own OAuth application for integrations to control scopes, enable additional integrations, or replace Langdock's default OAuth client with your custom configuration.
+- [Creating Custom Integrations](https://docs.langdock.com/resources/integrations/create-integrations.md): Custom integrations let you connect any API-enabled tool to an agent. This opens up endless possibilities. Below you find a comprehensive guide on how to build integrations, actions, and triggers.
+- [FAQ & Troubleshooting](https://docs.langdock.com/resources/integrations/faq.md): We have collected a few frequently asked questions and steps to resolve issues.
+- [File Support in Custom Integrations](https://docs.langdock.com/resources/integrations/file-support-for-actions.md): Handle file inputs and outputs in custom actions and triggers.
+- [Folder Sync](https://docs.langdock.com/resources/integrations/folder-sync.md): Sync folders from SharePoint or Google Drive directly to your agents for seamless access to up-to-date knowledge bases
+- [Introduction](https://docs.langdock.com/resources/integrations/introduction-integrations.md): Integrations let your agents interact with other software tools, retrieve data, and take actions automatically. We've pre-built integrations for the most common tools, plus you can build custom ones.
+- [Langdock Agent MCP Server](https://docs.langdock.com/resources/integrations/langdock-agent-mcp-server.md): Access your Langdock agents from any MCP-compatible AI client. The Langdock MCP Server exposes your workspace agents as MCP tools.
+- [Model Context Protocol (MCP)](https://docs.langdock.com/resources/integrations/mcp.md): Langdock’s implementation of the Model Context Protocol (MCP) enables seamless integration with external tools and services, providing powerful extensibility for AI agents and chat interactions.
+- [File Input in MCP Tools](https://docs.langdock.com/resources/integrations/mcp-file-input.md): Learn how to pass files to MCP tools in Langdock. When an MCP tool declares a file input field, Langdock resolves file references into structured FileData objects automatically.
+- [MCP File Outputs](https://docs.langdock.com/resources/integrations/mcp-file-outputs.md): Learn how MCP servers can expose files to Langdock through resources. Langdock turns MCP resource content with text or base64 data into downloadable file attachments.
+- [Sandbox Utility Functions](https://docs.langdock.com/resources/integrations/sandbox-utilities.md): Complete reference for built-in JavaScript utility functions available in custom integrations, actions, triggers, and workflow code nodes
+- [Using Integrations](https://docs.langdock.com/resources/integrations/using-integrations.md): This guide shows you how to use integrations within agents. We use the example of the Google Calendar integration, but the steps and considerations are valid for any other Langdock or custom integration.
+- [Vector Databases](https://docs.langdock.com/resources/integrations/vector-databases.md): Integrate your vector database with Langdock and let your agent perform a semantic search across your data.
+- [Best Practices & Tips](https://docs.langdock.com/resources/knowledge/best-practices.md): Proven methods and practical tips for effectively using Langdock in your team.
+- [Knowledge Basics](https://docs.langdock.com/resources/knowledge/knowledge-basics.md): Langdock processes knowledge in different ways. Based on file size and context, the system automatically chooses between two main methods: preview processing in the context window for smaller documents and embedding search for large files.
+- [Types of Knowledge](https://docs.langdock.com/resources/knowledge/knowledge-types.md): Overview of the different ways to add knowledge in Langdock: file uploads, integrations, folder sync, folders, and actions.
+- [Vector Databases & Folders](https://docs.langdock.com/resources/knowledge/vector-databases-knowledge-folders.md): Learn how to use vector databases and folders in Langdock to work with large document collections.
+- [Langdock Workshops](https://docs.langdock.com/resources/langdock-workshops.md): This page contains the official Langdock workshops and recordings.
+- [Webinar & FAQ](https://docs.langdock.com/resources/library/faq.md): Answers to common questions about the Library and File Templates in Langdock.
+- [Using File Templates](https://docs.langdock.com/resources/library/library-guide.md): A practical guide to generating high-quality documents and presentations from your own templates, including how to prompt, iterate, and share.
+- [Model Guide](https://docs.langdock.com/resources/models.md): One of our core-values is to build a tool which is model-agnostic. This means we do not want to restrict users to models from just one provider, but rather allow them to choose which model from which provider to use. Each model has different strengths and we encourage you to test the different model…
+- [Control Output Format](https://docs.langdock.com/resources/output-format.md): Control AI responses by explicitly specifying output formats like JSON, XML, Markdown, tables, or custom structures.
+- [Basics: Prompt Elements](https://docs.langdock.com/resources/prompt-elements.md): Prompt elements are the building blocks that make your LLM interactions more effective. Think of them as ingredients in a recipe, each one helps the AI understand exactly what you need and how to deliver it. You don't need all four every time, but combining a few will dramatically improve your resul…
+- [Prompting Techniques](https://docs.langdock.com/resources/prompting-techniques.md): Learn the three fundamental prompting techniques: zero-shot, few-shot, and chain-of-thought prompting.
+- [Give the LLM a Role](https://docs.langdock.com/resources/role.md): Improve response quality by assigning AI a specific role to activate relevant knowledge patterns and domain expertise.
+- [Webinar & FAQ](https://docs.langdock.com/resources/skills/faq.md): Answers to common questions about Skills in Langdock.
+- [Using Skills](https://docs.langdock.com/resources/skills/skills-guide.md): A practical guide to building your first Skills, with full worked examples you can copy or adapt.
+- [Structure Your Prompt](https://docs.langdock.com/resources/structure-prompt.md): There are two main ways to structure prompts: simple delimiters and XML tags. The choice depends on your complexity needs.
+- [Advanced: Tips & Tricks](https://docs.langdock.com/resources/tricks.md): Discover some valuable insights we have gathered over time and are excited to share with you. Dive in to discover how to craft clear, effective prompts and avoid common pitfalls, ensuring you get the best possible responses every time.
+- [Tricks and Shortcuts](https://docs.langdock.com/resources/tricks-and-shortcuts.md): To accelerate your work with Langdock, there are a few shortcuts and tricks you can use, like CMD + K.
+- [Account Settings](https://docs.langdock.com/settings/account.md): The Account Settings include all preferences and adjustments for a specific user. They only apply to this specific user and no one else. The account settings can be set by any user.
+- [Slack Bot (Setup)](https://docs.langdock.com/settings/chatbots/slack.md): Install the Langdock App in Slack and use your models and Agents directly in Slack
+- [Teams Bot (Setup)](https://docs.langdock.com/settings/chatbots/teams-bot.md): Install the Langdock App in Microsoft Teams and use your models and Agents directly in Teams
+- [Usage Limits](https://docs.langdock.com/settings/fair-usage-policy.md): Understand how usage is measured, what your limits are, and what happens when you reach them.
+- [How to add your own models](https://docs.langdock.com/settings/models/adding-models.md): Follow this setup guide to add your own AI models to your workspace.
+- [Overview](https://docs.langdock.com/settings/models/byok.md): By default, users use API keys from Langdock. With BYOK, you bring your own keys from your model provider instead.
+- [Getting started](https://docs.langdock.com/settings/models/byok-setup.md): To use your own models instead of Langdock's included AI models, BYOK needs to be activated.
+- [How to add fallback models](https://docs.langdock.com/settings/models/fallback-models.md): Use multiple deployments for one model to improve availability and manage provider limits.
+- [Recommended Models](https://docs.langdock.com/settings/models/recommended-models.md): Guidelines for selecting models in BYOK workspaces
+- [Setup Guides](https://docs.langdock.com/settings/models/setup-guides.md): Step-by-step guides for connecting models from Google Vertex AI, AWS Bedrock, Mistral, DeepSeek, Perplexity, and OpenAI-compatible endpoints.
+- [Microsoft Entra ID SAML Setup](https://docs.langdock.com/settings/security/entra.md): Enable your users to sign in to Langdock using their Entra ID accounts via SAML 2.0.
+- [Google SAML Setup](https://docs.langdock.com/settings/security/google.md): Enable your users to sign in to Langdock using their Google accounts via SAML 2.0.
+- [IP Restrictions](https://docs.langdock.com/settings/security/ip-restrictions.md): Restrict workspace access by IP address using CIDR allowlists to enhance your organization's security posture.
+- [Okta SAML Setup](https://docs.langdock.com/settings/security/okta.md): Enable your users to sign in to Langdock using their Okta accounts via SAML 2.0.
+- [Getting Started](https://docs.langdock.com/settings/security/saml.md): Learn about SAML 2.0 Single Sign-On and how to configure it for your Langdock workspace.
+- [Microsoft Entra ID Setup](https://docs.langdock.com/settings/security/scim/entra.md): Provision users from Entra ID to Langdock using SCIM.
+- [Getting Started](https://docs.langdock.com/settings/security/scim/scim.md): Learn about SCIM user provisioning and how to configure it for your Langdock workspace.
+- [Session Management](https://docs.langdock.com/settings/security/session-management.md): Manage user sessions and force re-authentication across your workspace for enhanced security control.
+- [Static IP Configuration](https://docs.langdock.com/settings/security/static-ip-configuration.md): Langdock Platform's static IP address for network security and firewall configurations.
+- [Usage Tips](https://docs.langdock.com/settings/usage-tips.md): This section covers practical tips for getting the most out of your usage.
+- [Workspace Settings](https://docs.langdock.com/settings/workspace.md): The workspace settings apply to multiple users, usually the entire workspace. This is only accessible for admins (except groups if the admins allow individual users to create groups).
+
+## OpenAPI Specs
+
+- [openapi](https://docs.langdock.com/openapi.yaml)
+- [package](https://docs.langdock.com/package.json)
+
+## Optional
+
+- [Changelog](https://www.langdock.com/changelog)
+- [Status](https://status.langdock.com/)
+- [Support](https://www.langdock.com/contact-us)

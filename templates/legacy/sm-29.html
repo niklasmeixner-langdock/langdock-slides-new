@@ -1,0 +1,87 @@
+<!--
+  SM-29 — Headline + subhead + 4-card grid with one Langdock-Blue accent card
+  Figma node: 750:18361
+
+  Use when: same shape as SM-30 (4 parallel features) but one card needs to
+  stand out — typically the active state, the recommended option, or the
+  brand differentiator. The active card uses Langdock Blue with light text;
+  the others are neutral cream cards.
+
+  Slots:
+    deck_title       1 line @ 12.8 px — ~32 chars
+    page_number      "P. N"
+    title            1–2 lines @ 64 px, max-width 752 px
+    subtitle         1–2 lines @ 36 px, max-width 610 px
+    cards[0..3].title    1 line @ 24 px regular — ~25 chars
+    cards[0..3].body     3–4 lines @ 24 px book
+    accent_index     index of the highlighted card (0..3). Default: 2.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-29 — 4 cards (one accent)</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21;
+    overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; }
+  .divider.bottom { top: 1040px; }
+
+  .content {
+    position: absolute; left: 40px; top: 159px;
+    width: 1840px; height: 849px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; max-width: 752px; }
+  .subtitle { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; color: #78787A; max-width: 610px; }
+
+  .cards { display: flex; gap: 16px; flex: 1; }
+  .card {
+    flex: 1; background: #F4F4F5;
+    border: 1px solid #D7D7D8; border-radius: 12px;
+    padding: 32px 40px;
+    display: flex; flex-direction: column; gap: 32px;
+  }
+  .card h3 { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: #1A1C21; }
+  .card p  { margin: 0; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: rgba(26, 28, 33, 0.55); }
+
+  .card.accent { background: #4469FC; border-color: #4469FC; }
+  .card.accent h3 { color: #F8F8F9; }
+  .card.accent p  { color: #EBEBEB; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="content">
+      <h1 class="title"    data-slot="title">All while keeping your data secure</h1>
+      <p  class="subtitle" data-slot="subtitle">Your work stays private — protected by enterprise-grade security and compliance.</p>
+
+      <div class="cards">
+        <div class="card"><h3 data-slot="card-0.title">No training</h3><p data-slot="card-0.body">Your prompts and documents stay private and are never used to train AI models.</p></div>
+        <div class="card"><h3 data-slot="card-1.title">Private</h3><p data-slot="card-1.body">You decide who accesses your data. Existing permissions stay in place.</p></div>
+        <div class="card accent"><h3 data-slot="card-2.title">GDPR compliant</h3><p data-slot="card-2.body">Built for EU privacy expectations: GDPR-aligned, with EU hosting options for strong data protection.</p></div>
+        <div class="card"><h3 data-slot="card-3.title">Enterprise SSO</h3><p data-slot="card-3.body">Connect through Okta, Entra or Google. Provisioning is automated, audit trails complete.</p></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

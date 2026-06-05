@@ -1,0 +1,100 @@
+<!--
+  SM-20 — Workshop section divider: huge headline + speaker portrait
+  Figma node: 750:19532
+
+  Use when: kicking off a workshop or named session. Left side carries a
+  130 px headline and a 36 px subhead (workshop label + date). Right side is
+  a large rounded portrait with speaker attribution at the bottom.
+
+  Slots:
+    deck_title         1 line @ 12.8 px
+    page_number        "P. N"
+    headline_line1     ~14 chars @ 130 px
+    headline_line2     ~14 chars @ 130 px
+    workshop_label     e.g. "Workshop 1/5" — 36 px
+    workshop_date      e.g. "23.05.2026" — 36 px
+    portrait_image_url 803 × 880 rounded portrait
+    speaker_name       1 line @ 24 px white
+    speaker_role       1 line @ 24 px muted on dark
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-20 — Workshop divider with speaker</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21;
+    overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; }
+  .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 160px;
+    height: 840px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .headline { margin: 0; font-weight: 400; font-size: 130px; line-height: 1; letter-spacing: -2.6px; color: #1A1C21; }
+  .headline p { margin: 0; }
+  .subhead { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; color: #78787A; }
+  .subhead p { margin: 0; }
+
+  .portrait {
+    position: absolute;
+    right: 40px; top: 100px;
+    width: 803px; height: 880px;
+    border-radius: 7px;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.6) 100%),
+      url('https://placehold.co/803x880/333/aaa?text=SPEAKER') center/cover;
+  }
+  .speaker {
+    position: absolute; left: 40px; bottom: 40px;
+    font-weight: 400; font-size: 24px; line-height: 1;
+    letter-spacing: -0.48px;
+  }
+  .speaker .name { margin: 0 0 6px; color: #fff; }
+  .speaker .role { margin: 0; color: #9F9F9D; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <div class="headline">
+        <p data-slot="headline_line1">Intro to AI</p>
+        <p data-slot="headline_line2">&amp; Basic Chat</p>
+      </div>
+      <div class="subhead">
+        <p data-slot="workshop_label">Workshop 1/5</p>
+        <p data-slot="workshop_date">23.05.2026</p>
+      </div>
+    </div>
+
+    <div class="portrait" data-slot="portrait_image_url">
+      <div class="speaker">
+        <p class="name" data-slot="speaker_name">Nina Ipsum,</p>
+        <p class="role" data-slot="speaker_role">Chief Marketing</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

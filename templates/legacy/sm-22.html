@@ -1,0 +1,75 @@
+<!--
+  SM-22 — Hub diagram variant (placeholder, content not yet extracted)
+  Figma node: 750:19013
+
+  The full design context for this master exceeded the MCP response limit
+  and was not extracted in detail. Based on the playground screenshot it is
+  another variant of the model/integration hub family (SM-23, SM-25, SM-26).
+
+  When you need this template at higher fidelity, re-pull with a smaller
+  scope or split it manually. For now this file mirrors SM-25 (simple hub
+  with centered pill + connector arcs).
+
+  Slots:
+    deck_title, page_number
+    bottom_left_label, bottom_right_label  24 px book
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-22 — Hub diagram (placeholder)</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F8F8F9; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+  .connectors { position: absolute; inset: 0; pointer-events: none; }
+  .center-pill {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px; height: 96px;
+    background: #4469FC; border: 1px solid #BEBEC2; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 24px; letter-spacing: -0.48px;
+  }
+  .bl, .br {
+    position: absolute; top: 889px;
+    font-weight: 300; font-size: 24px; line-height: 1.1; letter-spacing: -0.48px;
+    color: #78787A;
+  }
+  .bl { left: calc(8.33% + 59px); width: 757px; }
+  .br { left: calc(66.67% + 126px); width: 757px; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <svg class="connectors" viewBox="0 0 1920 1080">
+      <g fill="none" stroke="#BEBEC2" stroke-width="1.5" opacity="0.55">
+        <path d="M  -60 432 C 400 432 700 540 880 540" />
+        <path d="M  -60 540 C 400 540 700 540 880 540" />
+        <path d="M  -60 670 C 400 670 700 540 880 540" />
+        <path d="M 1880 432 C 1500 432 1240 540 1040 540" />
+        <path d="M 1880 540 C 1500 540 1240 540 1040 540" />
+        <path d="M 1880 670 C 1500 670 1240 540 1040 540" />
+      </g>
+    </svg>
+
+    <div class="center-pill" data-slot="center_logo">Langdock</div>
+
+    <p class="bl" data-slot="bottom_left_label">6+ Modell Anbieter</p>
+    <p class="br" data-slot="bottom_right_label">50+ Integrationen</p>
+  </div>
+</body>
+</html>

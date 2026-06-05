@@ -1,0 +1,108 @@
+<!--
+  SM-11 — Status-quo split: text left, chat-bubble illustration right
+  Figma node: 750:19605
+
+  Use when: dramatising a "before" state — typically the chatbot back-and-
+  forth pain. Left half (cool canvas) holds the headline and explanatory
+  subhead; right half (cream block) hosts a mock chat conversation. The
+  chat is a stylised vector / illustration; in the template it is shown as
+  alternating bubble shapes.
+
+  Slots:
+    deck_title, page_number
+    title_line1     1 line @ 64 px ink
+    title_line2     1 line @ 64 px ink
+    subtitle        1–2 lines @ 36 px ink, max-width 686 px
+    bubbles[0..n]   {side: "user" | "bot", text}  18 px chat lines
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-11 — Status quo: chatbot back-and-forth</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .right-block {
+    position: absolute; right: 0; top: 0;
+    width: 950px; height: 1080px;
+    background: #F1F0ED;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .text {
+    position: absolute; left: 40px; top: 160px;
+    width: 755px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; }
+  .title p { margin: 0; }
+  .subtitle { margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.72px; color: #1A1C21; width: 686px; }
+
+  .chat {
+    position: absolute; left: calc(58.33% + 33px); top: 313px;
+    width: 585px;
+    display: flex; flex-direction: column; gap: 13px;
+  }
+  .bubble {
+    max-width: 414px;
+    padding: 18px 26px;
+    border-radius: 19.5px;
+    font-size: 18.272px; line-height: 1.3;
+  }
+  .bubble.user {
+    align-self: flex-end;
+    background: #fff;
+    border: 1.218px solid #DCDEDD;
+    border-bottom-right-radius: 4.9px;
+    color: #1A1C21;
+  }
+  .bubble.bot {
+    align-self: flex-start;
+    background: #E7E8E7;
+    border-bottom-left-radius: 4.9px;
+    color: #6B706F;
+  }
+  .bubble.faded { opacity: 0.28; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="text">
+      <div class="title">
+        <p data-slot="title_line1">Status quo:</p>
+        <p data-slot="title_line2">Powerful Chatbot</p>
+      </div>
+      <p class="subtitle" data-slot="subtitle">You prompt, give feedback, add files, add integrations to arrive at results.</p>
+    </div>
+
+    <div class="chat">
+      <div class="bubble user" data-slot="bubbles.0.text">Write me a project summary for Q1</div>
+      <div class="bubble bot"  data-slot="bubbles.1.text">Here&rsquo;s a general overview of your Q1 project...</div>
+      <div class="bubble user" data-slot="bubbles.2.text">No, use our internal template</div>
+      <div class="bubble bot"  data-slot="bubbles.3.text">I don&rsquo;t have access to your templates. Could you paste it here?</div>
+      <div class="bubble user faded" data-slot="bubbles.4.text">Here&rsquo;s the template. Now rewrite it...</div>
+      <div class="bubble bot faded"  data-slot="bubbles.5.text">Sure, here&rsquo;s another attempt...</div>
+    </div>
+  </div>
+</body>
+</html>

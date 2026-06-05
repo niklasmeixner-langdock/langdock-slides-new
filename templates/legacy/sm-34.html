@@ -1,0 +1,122 @@
+<!--
+  SM-34 — Two-tone headline + body left, 5 numbered roadmap cards right
+  Figma node: 750:16543
+
+  Use when: walking through a "what we built / what's next" list. Left side:
+  48 px two-tone headline + 32 px supporting paragraph. Right side: 5
+  stacked cards each with a circled number, title, optional body, and a
+  pill badge ("Live" or "On Roadmap") in the upper-right.
+
+  Slots:
+    deck_title, page_number
+    eyebrow                       1 line @ 48 px ink
+    headline                      1 line @ 48 px grey
+    body                          2–3 paragraphs @ 32 px grey
+    items[0..4].number            ❶❷❸❹❺ (or 1-5) — 24 px Langdock Blue
+    items[0..4].title             1 line @ 24 px ink
+    items[0..4].body              0–2 lines @ 24 px book grey
+    items[0..4].status            "Live" | "On Roadmap" — 14 px pill
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-34 — Roadmap status cards</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 160px;
+    width: 810px;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+  .headline { margin: 0; font-weight: 400; font-size: 48px; line-height: 1.1; letter-spacing: -0.96px; }
+  .headline .eyebrow { color: #1A1C21; }
+  .headline .body    { color: #78787A; }
+  .body-text { margin: 0; font-weight: 400; font-size: 32px; line-height: 1.3; letter-spacing: -0.8px; color: #78787A; width: 686px; }
+  .body-text p { margin: 0 0 24px; }
+  .body-text p:last-child { margin-bottom: 0; }
+
+  .cards {
+    position: absolute; left: calc(50% + 51px); top: 152px;
+    width: 824px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .card {
+    background: #F4F4F5; border-radius: 12px;
+    padding: 40px 42px;
+    position: relative;
+  }
+  .card .head { display: flex; gap: 10px; font-size: 24px; line-height: 1.0; letter-spacing: -0.48px; }
+  .card .num { color: #4469FC; font-weight: 300; }
+  .card .item-title { color: #1A1C21; font-weight: 400; }
+  .card .body { margin: 8px 0 0; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: #78787A; }
+  .pill {
+    position: absolute; right: 42px; top: 40px;
+    border: 1px solid #1A1C21; border-radius: 124px;
+    padding: 2.5px 16px;
+    font-size: 14px; letter-spacing: -0.14px;
+    color: #1A1C21;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <p class="headline">
+        <span class="eyebrow" data-slot="eyebrow">Mercks myGPT Geschichte</span><br>
+        <span class="body"    data-slot="headline">myGPT Ergebnisse</span>
+      </p>
+      <div class="body-text" data-slot="body">
+        <p>Vor der Einführung Langdocks (April 2024) erreichte myGPT 9.000 monatlich aktive Nutzer.</p>
+        <p>Mit Langdock haben sie ihre monatlich aktiven Nutzer auf über 33.000 verdreifacht und in den letzten 12 Monaten mehr als 10 Millionen Prompts versendet.</p>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="head"><span class="num" data-slot="items.0.number">❶</span><span class="item-title" data-slot="items.0.title">Subagents &amp; Workflows</span></div>
+        <p class="body" data-slot="items.0.body">Eine moderne, leistungsfähige Plattform, die sicherstellt, dass allen Mitarbeitenden stets die besten Werkzeuge zur Verfügung stehen</p>
+        <span class="pill" data-slot="items.0.status">Live</span>
+      </div>
+      <div class="card">
+        <div class="head"><span class="num" data-slot="items.1.number">❷</span><span class="item-title" data-slot="items.1.title">Modelagnostische Plattform</span></div>
+        <span class="pill" data-slot="items.1.status">Live</span>
+      </div>
+      <div class="card">
+        <div class="head"><span class="num" data-slot="items.2.number">❸</span><span class="item-title" data-slot="items.2.title">Vollständig in der eigenen Infrastruktur gehostet</span></div>
+        <span class="pill" data-slot="items.2.status">Live</span>
+      </div>
+      <div class="card">
+        <div class="head"><span class="num" data-slot="items.3.number">❹</span><span class="item-title" data-slot="items.3.title">Individuelles Branding</span></div>
+        <p class="body" data-slot="items.3.body">Vollständiges Look &amp; Feel im Merck-Design</p>
+        <span class="pill" data-slot="items.3.status">Live</span>
+      </div>
+      <div class="card">
+        <div class="head"><span class="num" data-slot="items.4.number">❺</span><span class="item-title" data-slot="items.4.title">Technische Anpassungsfähigkeit</span></div>
+        <p class="body" data-slot="items.4.body">Eigene Links, Infoboxen, RAG, Vektor-Datenbanken, individuelle Integrationen sowie API, um maßgeschneiderte Anwendungsfälle zu ermöglichen</p>
+        <span class="pill" data-slot="items.4.status">On Roadmap</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

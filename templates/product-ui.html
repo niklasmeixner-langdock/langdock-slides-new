@@ -1,0 +1,90 @@
+<!--
+  SM-64 — Product UI showcase: tab row + shadowed app mockup
+  Figma node: 750:15277
+
+  Use when: presenting which Langdock product surface a feature lives in.
+  Top: 4 nav tabs separated by 40 px dividers; the active tab is ink-black,
+  the others muted. Below: a large shadowed UI mockup card filling most of
+  the slide.
+
+  Slots:
+    deck_title          1 line @ 12.8 px
+    page_number         "P. N"
+    tabs[0..3].label    1 line @ 36 px — ~14 chars
+    active_tab_index    which tab is highlighted (0..3). Default: 0.
+    mockup_image_url    UI screenshot (~1440 × 910)
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-64 — Product UI</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21;
+    overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left  { left: 40px; }
+  .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; }
+
+  /* Tab block */
+  .tabs-block {
+    position: absolute; left: 40px; top: 80px;
+    width: 1840px;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+  .tab-divider { height: 1px; background: #BEBEC2; width: 100%; }
+  .tabs {
+    display: flex; gap: 40px;
+    font-weight: 400; font-size: 36px; line-height: 1;
+    letter-spacing: -0.72px;
+  }
+  .tabs p { margin: 0; color: #78787A; }
+  .tabs p.active { color: #1A1C21; }
+
+  /* App mockup card */
+  .mockup {
+    position: absolute; left: 50%; top: calc(50% + 215px);
+    transform: translate(-50%, -50%);
+    width: 1440px; height: 910px;
+    border-radius: 8.825px;
+    background: #ededee
+      url('https://placehold.co/1440x910/EDEDEE/9aa0a6?text=APP+MOCKUP')
+      center/cover;
+    box-shadow: 0 15px 48px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+
+    <div class="tabs-block">
+      <div class="tab-divider"></div>
+      <div class="tabs">
+        <p class="active" data-slot="tabs.0.label">Chat</p>
+        <p              data-slot="tabs.1.label">Agents</p>
+        <p              data-slot="tabs.2.label">Workflows</p>
+        <p              data-slot="tabs.3.label">Mobile App</p>
+      </div>
+      <div class="tab-divider"></div>
+    </div>
+
+    <div class="mockup" data-slot="mockup_image_url"></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body {
+    margin: 0;
+    padding: 12px 14px;
+    font: 11px/1.4 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--figma-color-text);
+    background: var(--figma-color-bg);
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--figma-color-icon-disabled, #9aa0a6);
+    transition: background .15s;
+  }
+  .dot.live { background: var(--figma-color-icon-success, #2ecc71); }
+  .dot.err  { background: var(--figma-color-icon-danger,  #e94560); }
+  .label { font-weight: 600; font-size: 12px; }
+  .sub { color: var(--figma-color-text-secondary); margin-top: 2px; font-size: 11px; }
+
+  .last {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--figma-color-bg-secondary);
+  }
+  .last .name {
+    font-weight: 500;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--figma-color-text);
+  }
+  .last .where {
+    color: var(--figma-color-text-tertiary);
+    margin-top: 3px;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .jump {
+    margin-top: 8px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--figma-color-text);
+    border: 1px solid var(--figma-color-border);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .jump:hover { background: var(--figma-color-bg-hover); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="row"><span id="dot" class="dot"></span><span id="label" class="label">Connecting…</span></div>
+  <div id="meta" class="sub">Langdock Slides</div>
+
+  <div id="last" class="last hidden">
+    <div class="name" id="last-name"></div>
+    <div class="where" id="last-where"></div>
+    <button class="jump" id="jump">Jump to it</button>
+  </div>
+
+<script>
+  const WS_URL = 'ws://localhost:4000';
+
+  const dot     = document.getElementById('dot');
+  const label   = document.getElementById('label');
+  const meta    = document.getElementById('meta');
+  const last    = document.getElementById('last');
+  const lastName= document.getElementById('last-name');
+  const lastWhere=document.getElementById('last-where');
+  const jumpBtn = document.getElementById('jump');
+
+  let ws = null;
+  let reconnectTimer = null;
+  const pendingRequests = new Map(); // requestId → bool (so we know to ack on success)
+
+  function setStatus(state, text, sub) {
+    dot.className = 'dot' + (state === 'live' ? ' live' : state === 'err' ? ' err' : '');
+    label.textContent = text;
+    if (sub != null) meta.textContent = sub;
+  }
+
+  function showLast(node) {
+    last.classList.remove('hidden');
+    const extra = node.count && node.count > 1 ? ` · +${node.count - 1} more` : '';
+    lastName.textContent = node.name + extra;
+    lastWhere.textContent = `${node.width}×${node.height} · (${node.x}, ${node.y}) · ${node.page}`;
+  }
+
+  function send(obj) {
+    if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+  }
+
+  function connect() {
+    clearTimeout(reconnectTimer);
+    setStatus('', 'Connecting…');
+    try { ws = new WebSocket(WS_URL); }
+    catch (e) { setStatus('err', 'Bad URL', String(e.message || e)); return; }
+
+    ws.onopen = () => setStatus('live', 'Live', 'Waiting for the next call…');
+
+    ws.onmessage = async (ev) => {
+      let msg;
+      try { msg = JSON.parse(ev.data); } catch { return; }
+
+      // Existing path: raw code exec.
+      if (msg && msg.type === 'exec' && typeof msg.code === 'string') {
+        setStatus('live', 'Running…');
+        parent.postMessage({ pluginMessage: msg }, '*');
+        return;
+      }
+
+      // New path: render a template.
+      if (msg && msg.type === 'render-template' && typeof msg.html === 'string') {
+        setStatus('live', 'Rendering…');
+        pendingRequests.set(msg.requestId, true);
+        try {
+          const tree = await buildTreeFromHtml(msg.html, msg.slots || {});
+          tree.name = msg.name || 'Slide';
+          parent.postMessage({ pluginMessage: {
+            type: 'render-tree',
+            requestId: msg.requestId,
+            tree
+          } }, '*');
+        } catch (err) {
+          send({ type: 'result', requestId: msg.requestId, ok: false, error: String(err && err.message || err) });
+          setStatus('err', 'Render error', String(err && err.message || err));
+        }
+        return;
+      }
+    };
+
+    ws.onclose = () => {
+      setStatus('err', 'Disconnected', 'Reconnecting in 5s…');
+      reconnectTimer = setTimeout(connect, 5000);
+    };
+    ws.onerror = () => {};
+  }
+
+  jumpBtn.addEventListener('click', () => {
+    parent.postMessage({ pluginMessage: { type: 'focus' } }, '*');
+  });
+
+  window.onmessage = (event) => {
+    const m = event.data.pluginMessage;
+    if (!m) return;
+    if (m.type === 'created') {
+      showLast(m.node);
+    } else if (m.type === 'ok') {
+      setStatus('live', 'Done', 'Waiting for the next call…');
+      send({ type: 'result', requestId: m.requestId, ok: true, result: m.result });
+    } else if (m.type === 'err') {
+      setStatus('err', 'Error', m.message);
+      send({ type: 'result', requestId: m.requestId, ok: false, error: m.message, stack: m.stack });
+    }
+  };
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // HTML → tree.  Runs inside the plugin UI iframe (real DOM + CSS engine).
+  // We render the template into a hidden 1920×1080 iframe, substitute slots,
+  // let the browser compute layout, then walk the DOM emitting a JSON tree
+  // the sandbox can turn into Figma nodes.
+  // ──────────────────────────────────────────────────────────────────────────
+
+  async function buildTreeFromHtml(html, slots) {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:1920px;height:1080px;border:0;';
+    iframe.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(iframe);
+
+    await new Promise((resolve) => {
+      iframe.addEventListener('load', resolve, { once: true });
+      iframe.srcdoc = html;
+    });
+
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+
+    // Slot substitution.
+    for (const [slot, value] of Object.entries(slots)) {
+      doc.querySelectorAll(`[data-slot="${cssEscape(slot)}"]`).forEach((el) => {
+        if (/image|url|portrait/.test(slot) && typeof value === 'string') {
+          el.style.backgroundImage = `url("${value}")`;
+        } else {
+          el.textContent = value;
+        }
+      });
+    }
+
+    // Two RAFs to make sure layout has settled.
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const slideEl = doc.querySelector('.slide');
+    if (!slideEl) { iframe.remove(); throw new Error('No .slide element'); }
+    const slideRect = slideEl.getBoundingClientRect();
+
+    const tree = walkElement(slideEl, slideRect, win);
+
+    iframe.remove();
+    if (!tree) throw new Error('Walker returned null root');
+    return tree;
+  }
+
+  function cssEscape(s) { return String(s).replace(/(["\\])/g, '\\$1'); }
+
+  const TEXT_TAGS = new Set(['P','H1','H2','H3','H4','H5','H6','SPAN','LI','BUTTON','LABEL']);
+
+  function makeTextNode(el, style, x, y, w, h, constrained) {
+    return {
+      type: 'text',
+      x, y, w, h,
+      characters: getTextContent(el),
+      fontFamily: extractFontFamily(style.fontFamily),
+      fontSize: parseFloat(style.fontSize),
+      fontWeight: parseInt(style.fontWeight) || 400,
+      italic: style.fontStyle === 'italic',
+      lineHeight: parseLineHeight(style.lineHeight),
+      letterSpacing: parseLetterSpacing(style.letterSpacing),
+      color: parseColor(style.color) || { r: 0, g: 0, b: 0, a: 1 },
+      textAlign: style.textAlign,
+      // constrained: width is fixed (max-width / explicit width).
+      // !constrained: text should size to its natural content width.
+      constrained
+    };
+  }
+
+  function walkElement(el, slideRect, win) {
+    const style = win.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') return null;
+
+    const rect = el.getBoundingClientRect();
+    const x = Math.round(rect.left - slideRect.left);
+    const y = Math.round(rect.top  - slideRect.top );
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    if (w <= 0 || h <= 0) return null;
+
+    // ── Chart marker.  Templates mark a region with `data-chart="kind"`.
+    // The spec is JSON resolved in this order:
+    //   1. textContent (set by `data-slot` substitution — agent override)
+    //   2. `data-chart-spec` attribute (the template's default)
+    // Charts are leaves — their children are not walked.
+    const chartKind = el.getAttribute && el.getAttribute('data-chart');
+    if (chartKind) {
+      let spec = {};
+      const fromText = (el.textContent || '').trim();
+      const fromAttr = (el.getAttribute('data-chart-spec') || '').trim();
+      const raw = fromText || fromAttr;
+      if (raw) {
+        try { spec = JSON.parse(raw); }
+        catch (e) { spec = { _parseError: String(e.message), raw: raw.slice(0, 200) }; }
+      }
+      return { type: 'chart', kind: chartKind, spec, x, y, w, h };
+    }
+
+    const fill        = parseColor(style.backgroundColor);
+    const bgImage     = parseBackgroundImage(style.backgroundImage);
+    const borderWidth = parseFloat(style.borderTopWidth) || 0;
+    const borderColor = borderWidth ? parseColor(style.borderTopColor) : null;
+    const radius      = parseFloat(style.borderTopLeftRadius) || 0;
+    const overflow    = (style.overflow || 'visible').trim();
+    const clipsContent = overflow === 'hidden' || overflow === 'clip' || overflow === 'auto' || overflow === 'scroll';
+    const hasStyling   = !!fill || !!bgImage || borderWidth > 0;
+
+    // Width constrained? If yes, Figma must wrap to that width.
+    //
+    // getComputedStyle().width returns the *resolved* width in px for any
+    // laid-out element — even a `<span>` with no declared width — so we
+    // can't trust the px value as a signal of intent.  A real width
+    // constraint exists when:
+    //   - max-width is set, OR
+    //   - the element stretches to its parent's cross-axis width:
+    //       • a block in normal flow (e.g. a `<p>` inside a `<div>`)
+    //       • a block flex item in a flex-COLUMN parent (default
+    //         align-items=stretch fills the row)
+    //
+    // Anything else should size naturally in Figma:
+    //   - position:absolute elements (browser shrink-to-fit)
+    //   - inline / inline-block (sizes to content)
+    //   - flex-ROW items (size to content along the main axis)
+    //
+    // Inter renders wider than the iframe's fallback font, so falsely
+    // locking an iframe-measured width forces unwanted line breaks.
+    const parentEl       = el.parentElement;
+    const parentStyle    = parentEl ? win.getComputedStyle(parentEl) : null;
+    const parentDisplay  = parentStyle ? parentStyle.display : '';
+    const parentFlexDir  = parentStyle ? parentStyle.flexDirection : '';
+    const parentIsFlex   = parentDisplay === 'flex' || parentDisplay === 'inline-flex';
+    const parentIsFlexCol = parentIsFlex && (parentFlexDir === 'column' || parentFlexDir === 'column-reverse');
+    const parentIsFlexRow = parentIsFlex && !parentIsFlexCol;
+    const isAbsolute     = style.position === 'absolute' || style.position === 'fixed';
+    const isInline       = style.display === 'inline' || style.display === 'inline-block';
+    const hasMaxWidth    = style.maxWidth && style.maxWidth !== 'none';
+    const constrained    = hasMaxWidth || (
+      el.children.length === 0 &&
+      !isAbsolute &&
+      !isInline &&
+      !parentIsFlexRow
+    );
+
+    // Flex container?
+    const layout = (style.display === 'flex') ? {
+      mode: style.flexDirection && style.flexDirection.startsWith('column') ? 'VERTICAL' : 'HORIZONTAL',
+      gap: parseFloat(style.gap) || parseFloat(style.rowGap) || parseFloat(style.columnGap) || 0,
+      paddingTop: parseFloat(style.paddingTop) || 0,
+      paddingRight: parseFloat(style.paddingRight) || 0,
+      paddingBottom: parseFloat(style.paddingBottom) || 0,
+      paddingLeft: parseFloat(style.paddingLeft) || 0,
+      justify: style.justifyContent,
+      align: style.alignItems
+    } : null;
+
+    // Direct-text element?  No element children but has trimmed textContent.
+    const directText = (el.children.length === 0 && getTextContent(el).trim() !== '');
+    const tagIsTexty = TEXT_TAGS.has(el.tagName);
+
+    // ── Pure text leaf (no bg, no border): emit a single text node.
+    if (!hasStyling && (tagIsTexty || directText)) {
+      const t = makeTextNode(el, style, x, y, w, h, constrained);
+      if (!t.characters.trim()) return null;
+      return t;
+    }
+
+    // ── Styled container with text content only (no element children):
+    // Emit a frame + a centred text child via auto-layout. This handles
+    // pills, badges, and buttons (like the Langdock centre pill on
+    // hub-diagram, status pills on stacked-cards, etc.).
+    if (hasStyling && directText) {
+      const textChild = makeTextNode(el, style, 0, 0, 0, 0, false);
+      if (textChild.characters.trim()) {
+        return {
+          type: 'frame',
+          x, y, w, h,
+          fill, bgImage, borderColor, borderWidth, radius, clipsContent,
+          layout: {
+            mode: 'HORIZONTAL',
+            gap: 0,
+            paddingTop:    parseFloat(style.paddingTop)    || 0,
+            paddingRight:  parseFloat(style.paddingRight)  || 0,
+            paddingBottom: parseFloat(style.paddingBottom) || 0,
+            paddingLeft:   parseFloat(style.paddingLeft)   || 0,
+            justify: 'center',
+            align:   'center'
+          },
+          children: [textChild]
+        };
+      }
+    }
+
+    // ── Plain frame with element children.  Walk them.
+    const children = [];
+    for (const child of el.children) {
+      if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
+      const sub = walkElement(child, slideRect, win);
+      if (sub) {
+        const childStyle = win.getComputedStyle(child);
+        const childPos = childStyle.position;
+        if (layout && childPos !== 'absolute' && childPos !== 'fixed') {
+          // Normal flex child: flag it so the sandbox skips explicit x/y
+          // (auto-layout positions it).  KEEP the slide-relative x/y on
+          // the tree node — this child's *own* children still need it to
+          // compute relative positions when the child isn't itself a flex
+          // container.
+          sub._inFlex = true;
+          sub.flexGrow = parseFloat(childStyle.flexGrow) || 0;
+        } else if (layout) {
+          // position:absolute inside a flex parent — keep its computed x/y,
+          // tell the sandbox to take it out of the auto-layout flow.
+          sub._absoluteInFlex = true;
+        }
+        children.push(sub);
+      }
+    }
+
+    return {
+      type: 'frame',
+      x, y, w, h,
+      fill, bgImage, borderColor, borderWidth, radius, clipsContent,
+      layout,
+      children
+    };
+  }
+
+  function getTextContent(el) {
+    let result = '';
+    for (const node of el.childNodes) {
+      if (node.nodeType === 3) {                     // text
+        result += node.textContent;
+      } else if (node.nodeName === 'BR') {
+        result += '\n';
+      } else if (node.nodeType === 1) {
+        result += getTextContent(node);
+      }
+    }
+    // Collapse runs of whitespace inside a line, but keep \n.
+    return result.replace(/[ \t]+/g, ' ').replace(/^ +| +$/gm, '');
+  }
+
+  function extractFontFamily(ff) {
+    // CSS gives a comma-separated list; first name is the requested family.
+    const first = String(ff).split(',')[0].trim().replace(/^["']|["']$/g, '');
+    return first || 'Inter';
+  }
+
+  function parseColor(str) {
+    if (!str) return null;
+    if (str === 'transparent' || str === 'rgba(0, 0, 0, 0)') return null;
+    let m = str.match(/rgba?\(([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+))?\)/);
+    if (!m) return null;
+    return {
+      r: parseFloat(m[1]) / 255,
+      g: parseFloat(m[2]) / 255,
+      b: parseFloat(m[3]) / 255,
+      a: m[4] !== undefined ? parseFloat(m[4]) : 1
+    };
+  }
+
+  function parseBackgroundImage(str) {
+    if (!str || str === 'none') return null;
+    const m = str.match(/url\((["']?)(.+?)\1\)/);
+    return m ? m[2] : null;
+  }
+
+  function parseLineHeight(lh) {
+    if (!lh || lh === 'normal') return null;
+    const px = parseFloat(lh);
+    if (Number.isFinite(px)) return { value: px, unit: 'PIXELS' };
+    return null;
+  }
+
+  function parseLetterSpacing(ls) {
+    if (!ls || ls === 'normal') return null;
+    const px = parseFloat(ls);
+    if (Number.isFinite(px) && px !== 0) return { value: px, unit: 'PIXELS' };
+    return null;
+  }
+
+  connect();
+</script>
+</body>
+</html>

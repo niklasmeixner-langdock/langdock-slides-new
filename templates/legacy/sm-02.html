@@ -1,0 +1,87 @@
+<!--
+  SM-02 — Closing testimonial: image + bottom gradient + speaker left, metrics right
+  Figma node: 1084:32432
+
+  Variant of SM-01. Same anatomy but the dark gradient runs TOP→BOTTOM
+  (transparent → 70 % black) instead of left→right. Speaker block is on
+  the left; the 96 px metric stack is right-aligned.
+
+  Slots:
+    deck_title         "Success Story: <customer>"
+    page_number        "P. N"
+    bg_image_url       1920 × 1080 background
+    metrics[0..2]      1 line each @ 96 px, right-aligned
+    speaker_name       1 line @ 48 px
+    speaker_role       1–2 lines @ 48 px
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-02 — Closing testimonial (bottom gradient)</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F8F8F9;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #F3F4F5; overflow: hidden;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 93%),
+      url('https://placehold.co/1920x1080/333/aaa?text=BG') center/cover;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .speaker {
+    position: absolute;
+    left: 40px; top: 776px;
+    width: 910px; height: 223px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    font-weight: 400; font-size: 48px; line-height: 1.1; letter-spacing: -0.96px;
+    color: #F3F4F5;
+  }
+  .speaker .name { margin: 0 0 4px; }
+  .speaker .role { margin: 0; }
+
+  .metrics {
+    position: absolute;
+    right: 40px; top: 750px;
+    width: 1111px;
+    text-align: right;
+    font-weight: 400; font-size: 96px; line-height: 1.0; letter-spacing: -1.92px;
+    color: #F3F4F5;
+  }
+  .metrics p { margin: 0; }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="bg" data-slot="bg_image_url"></div>
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Success Story: Merck KGaA</p>
+      <p>P. <span data-slot="page_number">12</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="speaker">
+      <p class="name" data-slot="speaker_name">David Kreutzer</p>
+      <p class="role" data-slot="speaker_role">Product Owner<br>Merck KGaA</p>
+    </div>
+
+    <div class="metrics">
+      <p data-slot="metrics.0">+400% ROI</p>
+      <p data-slot="metrics.1">+45% Usage</p>
+      <p data-slot="metrics.2">+27% KPI</p>
+    </div>
+  </div>
+</body>
+</html>

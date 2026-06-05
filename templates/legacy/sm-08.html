@@ -1,0 +1,112 @@
+<!--
+  SM-08 — Workshop cover with 3 speaker portraits (sky-blue flood)
+  Figma node: 960:674
+
+  Use when: announcing a workshop / event. Big 130 px title at the top, a
+  row of 3 portraits (483 × 530 each, gap 24) in the middle with name/role
+  overlays at the bottom of each, and an event label + tiny brand mark at
+  the bottom.
+
+  Slots:
+    bg_color                 default sky-blue #B6CEE2 — pick any pastel
+    title                    1–2 lines @ 130 px — max ~28 chars / line
+    speakers[0..2].image_url 483 × 530 portrait
+    speakers[0..2].name      1 line @ 24 px white
+    speakers[0..2].org       1 line @ 24 px muted
+    event_line1              1 line @ 48 px grey
+    event_line2              1 line @ 48 px grey
+    event_mark_url           ~113 × 80 brand mark on the right
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-08 — Workshop cover with portraits</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #B6CEE2;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+
+  .content {
+    position: absolute; left: 40px; top: 40px;
+    width: 1840px; height: 960px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .title {
+    margin: 0; font-weight: 400; font-size: 130px; line-height: 1;
+    letter-spacing: -2.6px; color: #1A1C21; max-width: 1348px;
+  }
+
+  .portraits { display: flex; gap: 24px; }
+  .portrait {
+    width: 483px; height: 530px;
+    border-radius: 7px; overflow: hidden;
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0) 56%, rgba(0,0,0,0.5) 81%),
+      url('https://placehold.co/483x530/333/aaa?text=PORTRAIT') center/cover;
+  }
+  .portrait .meta {
+    position: absolute; left: 40px; bottom: 32px;
+    font-weight: 400; font-size: 24px; line-height: 1;
+  }
+  .portrait .meta p { margin: 0; }
+  .portrait .meta .name { color: #fff; }
+  .portrait .meta .org  { color: #9F9F9D; margin-top: 6px; }
+
+  .footer-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .event {
+    width: 910px;
+    font-weight: 400; font-size: 48px; line-height: 1.1;
+    letter-spacing: -0.96px; color: #78787A;
+  }
+  .event p { margin: 0; }
+  .event-mark {
+    width: 113px; height: 80px;
+    background: url('https://placehold.co/113x80/ffffff00/1A1C21?text=MARK') center/contain no-repeat;
+  }
+</style>
+</head>
+<body>
+  <div class="slide" data-slot="bg_color">
+    <div class="content">
+      <p class="title" data-slot="title">The Executive&rsquo;s Guide To Enterprise AI</p>
+
+      <div class="portraits">
+        <div class="portrait" data-slot="speakers.0.image_url">
+          <div class="meta">
+            <p class="name" data-slot="speakers.0.name">David Gebhardt</p>
+            <p class="org"  data-slot="speakers.0.org">Mobile.de</p>
+          </div>
+        </div>
+        <div class="portrait" data-slot="speakers.1.image_url">
+          <div class="meta">
+            <p class="name" data-slot="speakers.1.name">Felix Schlenther</p>
+            <p class="org"  data-slot="speakers.1.org">AI First</p>
+          </div>
+        </div>
+        <div class="portrait" data-slot="speakers.2.image_url">
+          <div class="meta">
+            <p class="name" data-slot="speakers.2.name">Katharina Hess</p>
+            <p class="org"  data-slot="speakers.2.org">Langdock</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <div class="event">
+          <p data-slot="event_line1">OMR Masterclass</p>
+          <p data-slot="event_line2">May 5th, 5pm</p>
+        </div>
+        <div class="event-mark" data-slot="event_mark_url"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

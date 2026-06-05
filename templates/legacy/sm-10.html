@@ -1,0 +1,107 @@
+<!--
+  SM-10 — Case study: title + 3 description cards + 1 outcome card + right image
+  Figma node: 750:38581
+
+  Use when: telling a customer case study with a punchy outcome metric.
+  Left column carries the headline and a stack of small info cards
+  (Customer / Status quo / Solution / Outcome). Right side is a large
+  shadowed screenshot.
+
+  Slots:
+    deck_title, page_number
+    title             1–2 lines @ 64 px ink
+    subtitle          1–3 lines @ 48 px grey
+    cards[0..2].label   1 line @ 24 px ink ("Kunde", "Status Quo", "Lösung")
+    cards[0..2].value   1–2 lines @ 24 px book grey
+    outcome             1 line @ 24 px white on Langdock Blue ("76% …")
+    image_url           1482 × 854 screenshot
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-10 — Case study with cards + image</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 159px;
+    width: 851px; height: 855px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .heading { display: flex; flex-direction: column; gap: 80px; width: 755px; }
+  .title    { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; }
+  .subtitle { margin: 0; font-weight: 400; font-size: 48px; line-height: 1.1; letter-spacing: -0.96px; color: #78787A; width: 751px; }
+
+  .cards { display: flex; flex-direction: column; gap: 16px; width: 753px; }
+  .card {
+    background: #F4F4F5; border-radius: 12px;
+    padding: 24px 32px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .card .label { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.0; letter-spacing: -0.48px; color: #1A1C21; }
+  .card .value { margin: 0; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: #78787A; }
+  .outcome {
+    background: #4469FC; border-radius: 12px;
+    padding: 24px 32px;
+    margin: 0; font-weight: 400; font-size: 24px; line-height: 1.0; letter-spacing: -0.48px;
+    color: #FFFFFF;
+  }
+
+  .image {
+    position: absolute; left: calc(50% + 70px); top: calc(50% + 47px);
+    transform: translateY(-50%);
+    width: 1482px; height: 854px;
+    background: url('https://placehold.co/1482x854/EDEDEE/9aa0a6?text=SCREENSHOT') center/cover;
+    box-shadow: 0 15px 48px rgba(0,0,0,0.08);
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <div class="heading">
+        <p class="title"    data-slot="title">ROI: Agenten</p>
+        <p class="subtitle" data-slot="subtitle">Schnellere und bessere Antworten<br>durch IT Help Desk Agent</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <p class="label" data-slot="cards.0.label">Kunde</p>
+          <p class="value" data-slot="cards.0.value">Globaler Konzern (50.000 Mitarbeiter)</p>
+        </div>
+        <div class="card">
+          <p class="label" data-slot="cards.1.label">Status Quo</p>
+          <p class="value" data-slot="cards.1.value">Enorme Belastung durch manuelle Beantwortung von IT Help Anfragen</p>
+        </div>
+        <div class="card">
+          <p class="label" data-slot="cards.2.label">Lösung</p>
+          <p class="value" data-slot="cards.2.value">Automatisierte Antworten auf Basis von Agenten und firmeninternem RAG</p>
+        </div>
+        <p class="outcome" data-slot="outcome">76% weniger manuelle Anfragen</p>
+      </div>
+    </div>
+
+    <div class="image" data-slot="image_url"></div>
+  </div>
+</body>
+</html>

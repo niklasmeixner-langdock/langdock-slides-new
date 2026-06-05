@@ -1,0 +1,62 @@
+<!--
+  SM-61 — Short 36 px description + large product-UI mockup
+  Figma node: 750:15887
+
+  Use when: showing a product screenshot with a 1-2 line explanation above.
+  Description is left-aligned at y=120 (36 px); below, a 1440 × 1075 app
+  mockup card with a heavy shadow.
+
+  Slots:
+    deck_title, page_number
+    description       1–2 lines @ 36 px ink (max 908 px)
+    mockup_image_url  ~1440 × 1075 app screenshot
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SM-61 — Description + product mockup</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide { position: relative; width: 1920px; height: 1080px; background: #F1F0ED; font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif; color: #1A1C21; overflow: hidden; }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; }
+
+  .description {
+    position: absolute; left: 40px; top: 120px;
+    width: 910px;
+    margin: 0; font-weight: 400; font-size: 36px; line-height: 1.1;
+    letter-spacing: -0.72px; color: #1A1C21;
+  }
+
+  .mockup {
+    position: absolute; left: 50%; top: 300px;
+    transform: translateX(-50%);
+    width: 1440px; height: 1075px;
+    border-radius: 8.83px 8.83px 0 0;
+    background:
+      rgba(251, 251, 251, 0.7)
+      url('https://placehold.co/1440x1075/EDEDEE/9aa0a6?text=APP+MOCKUP') center/cover;
+    box-shadow: 0 15px 48px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+
+    <p class="description" data-slot="description">Langdock is building towards doing more for you. Here&rsquo;s what we have shipped and what is coming next.</p>
+
+    <div class="mockup" data-slot="mockup_image_url"></div>
+  </div>
+</body>
+</html>

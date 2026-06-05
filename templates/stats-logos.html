@@ -1,0 +1,108 @@
+<!--
+  SM-33 — Stat cards + customer logo wall split
+  Figma node: 750:16613
+
+  Use when: social proof slide. Left: title + 5 stat cards (number + caption).
+  Right: a logo wall on a slightly cooler #F8F8F9 background, ~5 columns ×
+  5 rows of customer logos.
+
+  Slots:
+    deck_title, page_number
+    title                           1–2 lines @ 64 px ink
+    stats[0..n].value               1 line @ 24 px ink ("6000+", "100+", "18%")
+    stats[0..n].label               1 line @ 24 px book grey
+    logos[0..24].image_url          ~150 × 70 brand logos
+-->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SM-33 — Stats + customer logos</title>
+<style>
+  html, body { margin: 0; background: #2a2a2a; }
+  .slide {
+    position: relative; width: 1920px; height: 1080px;
+    background: #F1F0ED;
+    font-family: 'STK Bureau Sans', 'Inter', system-ui, sans-serif;
+    color: #1A1C21; overflow: hidden;
+  }
+  .right-block {
+    position: absolute; right: 0; top: 0;
+    width: 950px; height: 1080px;
+    background: #F8F8F9;
+  }
+  .nav-left, .nav-right { position: absolute; top: 30px; color: #78787A; font-size: 12.8px; line-height: 15px; font-weight: 400; }
+  .nav-left { left: 40px; } .nav-right { left: 195px; }
+  .nav-right p { margin: 0; }
+  .divider { position: absolute; left: 40px; width: 1840px; height: 1px; background: #BEBEC2; }
+  .divider.top { top: 104px; } .divider.bottom { top: 1040px; }
+
+  .left {
+    position: absolute; left: 40px; top: 159px;
+    width: 851px; height: 855px;
+    display: flex; flex-direction: column; gap: 80px;
+  }
+  .title { margin: 0; font-weight: 400; font-size: 64px; line-height: 1.1; letter-spacing: -1.28px; color: #1A1C21; }
+  .stats { display: flex; flex-direction: column; gap: 16px; width: 753px; }
+  .stat {
+    background: #F4F4F5; border-radius: 12px;
+    padding: 24px 32px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .stat .value { margin: 0; font-weight: 400; font-size: 24px; line-height: 1.0; letter-spacing: -0.48px; color: #1A1C21; }
+  .stat .label { margin: 0; font-weight: 300; font-size: 24px; line-height: 1.2; letter-spacing: -0.48px; color: #78787A; }
+
+  .logos {
+    position: absolute; left: calc(50% + 81px); top: 305px;
+    width: 1040px;
+    display: grid; grid-template-columns: repeat(5, 202px);
+    gap: 0;
+  }
+  .logo {
+    width: 202px; height: 73px;
+    display: flex; align-items: center; justify-content: center;
+    color: #999; font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div class="slide">
+    <div class="right-block"></div>
+
+    <div class="nav-left">Langdock</div>
+    <div class="nav-right">
+      <p data-slot="deck_title">Advanced Tools</p>
+      <p>P. <span data-slot="page_number">1</span></p>
+    </div>
+    <div class="divider top"></div>
+    <div class="divider bottom"></div>
+
+    <div class="left">
+      <h1 class="title" data-slot="title">ROI: Agenten</h1>
+      <div class="stats">
+        <div class="stat"><p class="value" data-slot="stats.0.value">6000+</p><p class="label" data-slot="stats.0.label">Firmen vertrauen Langdock</p></div>
+        <div class="stat"><p class="value" data-slot="stats.1.value">100+</p><p class="label" data-slot="stats.1.label">Erfolgreiche große Rollouts</p></div>
+        <div class="stat"><p class="value" data-slot="stats.2.value">18%</p><p class="label" data-slot="stats.2.label">Monatliches Wachstum und profitabel</p></div>
+        <div class="stat"><p class="value" data-slot="stats.3.value">18%</p><p class="label" data-slot="stats.3.label">Monatliches Wachstum und profitabel</p></div>
+        <div class="stat"><p class="value" data-slot="stats.4.value">18%</p><p class="label" data-slot="stats.4.label">Monatliches Wachstum und profitabel</p></div>
+      </div>
+    </div>
+
+    <div class="logos">
+      <div class="logo" data-slot="logos.0">LOGO</div><div class="logo" data-slot="logos.1">LOGO</div>
+      <div class="logo" data-slot="logos.2">LOGO</div><div class="logo" data-slot="logos.3">LOGO</div>
+      <div class="logo" data-slot="logos.4">LOGO</div><div class="logo" data-slot="logos.5">LOGO</div>
+      <div class="logo" data-slot="logos.6">LOGO</div><div class="logo" data-slot="logos.7">LOGO</div>
+      <div class="logo" data-slot="logos.8">LOGO</div><div class="logo" data-slot="logos.9">LOGO</div>
+      <div class="logo" data-slot="logos.10">LOGO</div><div class="logo" data-slot="logos.11">LOGO</div>
+      <div class="logo" data-slot="logos.12">LOGO</div><div class="logo" data-slot="logos.13">LOGO</div>
+      <div class="logo" data-slot="logos.14">LOGO</div><div class="logo" data-slot="logos.15">LOGO</div>
+      <div class="logo" data-slot="logos.16">LOGO</div><div class="logo" data-slot="logos.17">LOGO</div>
+      <div class="logo" data-slot="logos.18">LOGO</div><div class="logo" data-slot="logos.19">LOGO</div>
+      <div class="logo" data-slot="logos.20">LOGO</div><div class="logo" data-slot="logos.21">LOGO</div>
+      <div class="logo" data-slot="logos.22">LOGO</div><div class="logo" data-slot="logos.23">LOGO</div>
+      <div class="logo" data-slot="logos.24">LOGO</div>
+    </div>
+  </div>
+</body>
+</html>
